@@ -109,7 +109,7 @@
                                             <input id="inputUserComment" name="content" type="text" class="cmt-message-input" value="" placeholder="">
                                         </div>
                                         <div class="cmt-message-send">
-                                            <button id="sendUserComment" class="btn btn-send-comment" type="button" data-comment="{{ $cur_comment_id }}" data-lesson="{{ $cur_lesson_id }}"><i class="zmdi zmdi-mail-send"></i></button>
+                                            <button id="sendUserComment" class="btn btn-send-comment" type="button" data-comment="{{ $cur_comment_id }}" data-lesson="{{ $cur_lesson_id }}" data-reply="{{$cur_reply_id}}"><i class="zmdi zmdi-mail-send"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -323,10 +323,12 @@
             if (content != '' && content != null) {
                 let lesson_id = $(this).attr('data-lesson');
                 let comment_id = $(this).attr('data-comment');
+                let reply_id = $(this).attr('data-reply');
                 let formData = {
                     comment_id: comment_id,
                     lesson_id: lesson_id,
-                    content: content
+                    content: content,
+                    reply_id: reply_id
                 };
 
                 $.ajax({

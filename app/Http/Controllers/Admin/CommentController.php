@@ -88,6 +88,7 @@ class CommentController extends Controller {
             $userComments[] = $userComment;
         }
 
+
         if($request->isMethod('get')) {
             $labels = Label::all();
 
@@ -135,6 +136,8 @@ class CommentController extends Controller {
         $lesson_id = $data['lesson_id'];
         $content = $data['content'];
         $comment_id = $data['comment_id'];
+        $replyId = $request->reply_id;
+
         $response = array();
 
         try {
@@ -157,7 +160,8 @@ class CommentController extends Controller {
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $user_id,
                     'comment_id' => $comment_id,
-                    'content' => $content
+                    'content' => $content,
+                    'reply_id' => $replyId
                 ]);
 
                 // update comment: updated_time

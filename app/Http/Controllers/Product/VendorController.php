@@ -29,12 +29,9 @@ class VendorController extends Controller
     }
 
 
-
     public function admin_lesson_view($id, $comment_id = null) {
-        $nameChat = Auth::user()->first_name . " " . Auth::user()->last_name;
-        $emailChat = Auth::user()->email;
-        $phoneChat = Auth::user()->phone;
 
+        $userId = Auth::user()->id;
         // check permission to view lesson
         if (Auth::user()->role_id >= 3) {
             $has_permission = CourseLesson::where('lesson_id', $id)
@@ -48,7 +45,57 @@ class VendorController extends Controller
             }
         }
 
-        $vendor = Vendor::where('id', $id)->first();
+        $vendor = Vendor::where('id', $id)->first(); // Lession detail
+
+        
+
+        $listComments = $fileInComment = array();
+        
+
+        if(!request()->st_id) {
+            $firstCommentOfUser = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+                             -> where('user_id', Auth::user()->id)
+                             -> first();
+            if(!empty($firstCommentOfUser->created_time)) {
+                $createTimeFirstComment = $firstCommentOfUser->created_time;
+    
+                $listComments = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+                ->leftJoin('comments', 'comments.id', '=', 'comment_detail.comment_id')
+                ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
+                ->select('comment_detail.*', 'users.role_id', 'users.first_name', 'users.last_name', 'users.email', 'users.username')
+                -> where('users.id', $userId)
+                -> orWhere(function($q) use ($createTimeFirstComment, $userId) {
+                    $q -> where('comment_detail.created_time', '>=', $createTimeFirstComment)
+                       -> where('comment_detail.reply_id', $userId);
+                })
+                ->get();
+            }
+        } else{ // view chat with acc tearch
+            $studentId = request()->st_id;
+
+
+            $firstCommentOfUser = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+                             -> where('user_id', $studentId)
+                             -> first();
+            
+            if(!empty($firstCommentOfUser->created_time)) {
+                $createTimeFirstComment = $firstCommentOfUser->created_time;
+                $listComments = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+                    ->leftJoin('comments', 'comments.id', '=', 'comment_detail.comment_id')
+                    ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
+                    ->select('comment_detail.*', 'users.role_id', 'users.first_name', 'users.last_name', 'users.email', 'users.username')
+                    -> where('users.id', $studentId)
+                    // -> where('comment_detail.reply_id', Auth::user()->id)
+                    -> orWhere(function($q) use ($createTimeFirstComment, $studentId) {
+                        $q -> where("users.role_id", "<" , 3)
+                           -> where('comment_detail.reply_id', $studentId)
+                           -> where('comment_detail.created_time', '>=', $createTimeFirstComment);
+                    })
+                    ->get();
+            }
+        }
+        
+
         // remove notification: new comment
         if (!is_null_or_empty($comment_id)) {
             if (Auth::user()->role_id == 2) {
@@ -70,27 +117,20 @@ class VendorController extends Controller
         $cur_lesson_id = $id;
         $cur_comment_id = '';
 
-        $listComments = $fileInComment = array();
-        if (!is_null_or_empty($comment_id)) {
-            $listComments = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
-                ->leftJoin('comments', 'comments.id', '=', 'comment_detail.comment_id')
-                ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
-                ->select('comment_detail.*', 'users.role_id', 'users.first_name', 'users.last_name', 'users.email', 'users.username')
-                ->where('comments.lesson_id', '=', $id)
-                ->where('comments.id', '=', $comment_id)
-                ->get();
 
-            $fileInComment = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
-                ->leftJoin('comments', 'comments.id', '=', 'comment_detail.comment_id')
-                ->select('comment_detail.*')
-                ->where('comment_detail.type', '>', 1) /* 1: text */
-                ->where('comments.lesson_id', '=', $id)
-                ->where('comments.id', '=', $comment_id)
-                ->get();
-            $cur_comment_id = $comment_id;
-        }
+        $fileInComment = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+            ->leftJoin('comments', 'comments.id', '=', 'comment_detail.comment_id')
+            ->select('comment_detail.*')
+            ->where('comment_detail.type', '>', 1) /* 1: text */
+            ->where('comments.lesson_id', '=', $id)
+            ->where('comments.id', '=', $comment_id)
+            ->get();
+        $cur_comment_id = $comment_id;
 
-        return view('admin.lessons.view', compact('vendor', 'nameChat', 'emailChat', 'phoneChat', 'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id'));
+        $cur_reply_id = request()->st_id;
+       
+
+        return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));
     }
 
     public function index_course($id)

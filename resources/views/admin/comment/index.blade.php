@@ -104,7 +104,7 @@
                                             @endif
                                             <td scope="row">
                                                 <div class="text-right">
-                                                    <a type="button" href="@if (isset($item['comments']->id)) {{ route('admin_lesson_view', ['id' => $item['comments']->lesson_id, 'comment_id' => $item['comments']->id ]) }} @else {{ route('admin_lesson_view', $item['comments']->lesson_id) }} @endif" class="btn btn-warning waves-effect waves-light m-1">
+                                                    <a type="button" href="@if (isset($item['comments']->id)) {{ route('admin_lesson_view', ['id' => $item['comments']->lesson_id, 'comment_id' => $item['comments']->id ]) }}@else {{ route('admin_lesson_view', $item['comments']->lesson_id) }} @endif?st_id={{$item['comments']->user_id}}" class="btn btn-warning waves-effect waves-light m-1">
                                                         <i class="zmdi zmdi-comment-text"></i> <span>View</span>
                                                     </a>
                                                 </div>
