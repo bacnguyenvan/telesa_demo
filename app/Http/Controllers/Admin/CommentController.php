@@ -69,7 +69,12 @@ class CommentController extends Controller {
         }
 
         $userComments = [];
+        $userIdArr = [];
+
         foreach ($comments as $key => $value) {
+            if(in_array($value->user_id, $userIdArr)) continue;
+            $userIdArr[] = $value->user_id;
+            
             $latestComment = CommentDetail::orderBy('comment_detail.created_time', 'DESC')
                 ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
                 // ->where('comment_detail.user_id', '<>', $user_id)
