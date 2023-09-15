@@ -217,6 +217,7 @@
                 @csrf
                 <input type="hidden" name="lesson" value="{{ $cur_lesson_id }}">
                 <input type="hidden" name="comment" value="{{ $cur_comment_id }}">
+                <input type="hidden" name="reply_id" value="{{ $cur_reply_id }}">
             </form>
             <div class="form-notice">
                 <p>Maximum upload file size: 150MB.</p>

@@ -79,6 +79,7 @@ class AjaxController extends Controller {
                 $filename = generate_random_string(20) . '-' . $original_filename;
                 $lesson_id = $request->get('lesson');
                 $comment_id = $request->get('comment');
+                $replyId = $request->get('reply_id');
                 // File upload location
                 $location = 'uploads/comments/' . $comment_id;
                 // Upload file
@@ -89,6 +90,7 @@ class AjaxController extends Controller {
                 // add comment detail
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => Auth::user()->id,
+                    'reply_id' => $replyId,
                     'comment_id' => $comment_id,
                     'content' => $original_filename,
                     'path' => $path,

@@ -46,7 +46,6 @@ class VendorController extends Controller
         }
 
         $vendor = Vendor::where('id', $id)->first(); // Lession detail
-
         
 
         $listComments = $fileInComment = array();
@@ -70,7 +69,7 @@ class VendorController extends Controller
                 })
                 ->get();
             }
-        } else{ // view chat with acc tearch
+        } else{ // view chat with acc teacher
             $studentId = request()->st_id;
 
 
@@ -128,6 +127,8 @@ class VendorController extends Controller
         $cur_comment_id = $comment_id;
 
         $cur_reply_id = request()->st_id;
+
+        // dd($listComments);
        
 
         return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));

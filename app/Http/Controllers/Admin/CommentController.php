@@ -82,7 +82,21 @@ class CommentController extends Controller {
                 ->where('comment_detail.comment_id', '=', $value->id)
                 ->first();
 
-                $userComment = array(
+            if(!empty($latestComment)) {
+                $latestComment->first_name_answer = $latestComment->first_name;
+                $latestComment->last_name_answer = $latestComment->last_name;
+
+                if($latestComment->role_id < 3) {
+                    $student = User::where('id', $latestComment->reply_id)->first();
+                    if(!empty($student)) {
+                        $latestComment->first_name = $student->first_name;
+                        $latestComment->last_name = $student->last_name;
+                        $latestComment->email = $student->email;
+                        $latestComment->photo = $student->photo;
+                    }
+                }
+            }
+            $userComment = array(
                 'comments' => $value,
                 'last_comment' => $latestComment
             );
@@ -92,7 +106,6 @@ class CommentController extends Controller {
 
             $userComments[] = $userComment;
         }
-
 
         if($request->isMethod('get')) {
             $labels = Label::all();

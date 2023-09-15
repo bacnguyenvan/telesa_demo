@@ -49,9 +49,18 @@
                                     <tbody id="commentlist">
                                         @foreach ($userComments as $key => $item)
                                         <tr class="@if ($item['new_comment'] > 0) new-comment @endif">
-                                            <td scope="row">
+                                            <td scope="row" @if(Auth::user()->role_id > 2) style="width: 10%;" @endif>
                                                 @if (!is_null($item['last_comment']))
                                                     <div class="d-flex">
+                                                        @if(Auth::user()->role_id > 2)
+                                                        <div>
+                                                            <img src="{{ asset('avatar.png') }}" height="56" alt="" srcset="" style="border-radius: 50%;">
+                                                        </div>
+                                                        <div class="px-3" style="letter-spacing: 2.3px; align-self:center">
+                                                            
+                                                            <div class="montserratfont">TELESAENGLISH</div>
+                                                        </div>
+                                                        @else
                                                         <div>
                                                             @if (!is_null($item['last_comment']->photo))
                                                                 <img src="{{ asset($item['last_comment']->photo) }}" height="56" alt="" srcset="" style="border-radius: 50%;">
@@ -59,7 +68,7 @@
                                                                 <img src="{{ asset('avatar.png') }}" height="56" alt="" srcset="" style="border-radius: 50%;">
                                                             @endif
                                                         </div>
-                                                        <div class="px-3" style="letter-spacing: 2.3px;">
+                                                        <div class="px-3" style="letter-spacing: 2.3px; align-self:center">
                                                             @if (!is_null($item['comments']->label))
                                                                 <div class="labelpack" style="min-width: 100px;">
                                                                     <?php
@@ -80,6 +89,7 @@
                                                                 <div class="montserratfont">{{trim($item['last_comment']->first_name . ' ' . $item['last_comment']->last_name)}}</div>
                                                             @endif
                                                         </div>
+                                                        @endif
                                                     </div>
                                                 @endif
                                             </td>
@@ -98,7 +108,7 @@
                                             @if(Auth::user()->role_id < 3)
                                                 <td>
                                                     @if(!is_null($item['last_comment']) && $item['last_comment']->role_id < 3)
-                                                    {{trim($item['last_comment']->first_name . ' ' . $item['last_comment']->last_name)}}
+                                                    {{trim($item['last_comment']->first_name_answer . ' ' . $item['last_comment']->last_name_answer)}}
                                                     @endif
                                                 </td>
                                             @endif
