@@ -6,7 +6,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
- Route::get('/generate-key', function() {
+Route::get('/test-ws', function () {
+    event(new \App\Events\PlaygroundEvent());
+    echo "oke";
+});
+
+Route::get('/generate-key', function() {
      $exitCode = Artisan::call('key:generate');
      return 'Routes cache cleared';
  });

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Exception;
-
+use App\Events\ChatEvent;
 class CommentController extends Controller {
 
     public function dashboard_user_comment(Request $request) {
@@ -94,6 +94,8 @@ class CommentController extends Controller {
                         $latestComment->email = $student->email;
                         $latestComment->photo = $student->photo;
                     }
+                } else {
+                    // $latestComment->reply_id = $value->user_id;
                 }
             }
             $userComment = array(
@@ -109,7 +111,7 @@ class CommentController extends Controller {
 
         if($request->isMethod('get')) {
             $labels = Label::all();
-
+            // dd($userComments);
             return view('admin.comment.index', compact('userComments', 'user_role', 'labels'));
         }
         else if($request->isMethod('post')) {
@@ -143,6 +145,7 @@ class CommentController extends Controller {
     }
 
     public function add_new_comment(Request $request) {
+        
         $data = $request->validate([
             'comment_id' => 'nullable|integer',
             'lesson_id' => 'required',
@@ -159,6 +162,15 @@ class CommentController extends Controller {
         $response = array();
 
         try {
+            $time = show_comment_detail_created_time();
+            
+            if ($role_id < 3) {
+                $senderName = "Telesa English";
+            } else{
+                $senderName = Auth::user()->first_name . " " . Auth::user()->last_name;
+            }
+
+            event(new ChatEvent($user_id, $replyId, $content, $time, $senderName));
             if (is_null_or_empty($comment_id)) {
                 if (in_array($role_id, array(1, 2))) {
                 } else if ($role_id != 3) {
@@ -185,7 +197,7 @@ class CommentController extends Controller {
                 // update comment: updated_time
                 $updated_time = \Carbon\Carbon::createFromFormat('m d Y H:i A', date('m d Y H:iA'));
                 DB::table('comments')->where('id', $comment_id)->update(['updated_time' => $updated_time]);
-                $response = array('success' => 'add new comment success.', 'id' => $cd_id, 'time' => show_comment_detail_created_time());
+                $response = array('success' => 'add new comment success.', 'id' => $cd_id, 'time' => $time);
 
                 // add notification
                 // delete record in table user_comments.comment_id = $comment_id
@@ -208,6 +220,7 @@ class CommentController extends Controller {
                 }
 
                 UserComments::insert($uc_data);
+
             }
         } catch (Exception $e) {
             $response = array('failed' => $e->getMessage());

@@ -261,6 +261,9 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="u_id" value="{{ Auth::user()->id }}">
+    <input type="hidden" id="role_id" value="{{ Auth::user()->role_id }}">
+    <input type="hidden" id="full_name" value="{{ Auth::user()->first_name}} {{Auth::user()->last_name}}">
     <div class="bg-overlay"></div>
 </div>
 @endif
@@ -452,5 +455,8 @@
         }
     })
 </script>
+
+<script src="{{ asset('js/socket.js') }}"></script>
+
 @endpush
 @endsection
