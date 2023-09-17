@@ -6366,17 +6366,25 @@ channel.subscribed(function () {
 }).listen('.chat-msg', function (event) {
   // chat-msg: broadcastAs
   console.log("event: ", event);
-  var msg = event.message;
+  var content = event.content;
   var senderId = event.sender_id;
   var receiverId = event.reicever_id;
   var time = event.time;
   var name = event.name;
+  var msg = content.message;
   var sId = $('#r_id').val();
   var uId = $('#u_id').val();
   var roleId = $('#role_id').val();
 
   if (senderId != uId) {
-    var html = '<div class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span>' + name + '</span>' + '</div>' + '<div class="comment-detail">' + '<span>' + msg + '</span>' + '</div>' + '</div>' + '<div class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
+    var html = '';
+
+    if (content.filepath) {
+      html = '<div class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span> ' + name + ' </span>' + '</div>' + '<div class="comment-detail">' + '<div class="preview-image">' + '<a href="' + content.filepath + '" target="_blank">' + '<div class="bg-preview-image" style="background-image: url(' + content.filepath + ')">' + '</div>' + '</a>' + '</div>' + '<span>' + '<a href="' + content.filepath + '" target="_blank">' + content.filename + '</a>' + '</span>' + '</div>' + '</div>' + '<div class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
+    } else {
+      html = '<div class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span>' + name + '</span>' + '</div>' + '<div class="comment-detail">' + '<span>' + msg + '</span>' + '</div>' + '</div>' + '<div class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
+    }
+
     $('.user-comment-list').append(html);
     globalScripts.auto_scroll_comment_details();
   }

@@ -21,21 +21,44 @@ channel.subscribed(() => {
 }).listen('.chat-msg', (event) => { // chat-msg: broadcastAs
     console.log("event: ",event);
 
-    const msg = event.message;
+    var content = event.content;
     const senderId = event.sender_id;
     const receiverId = event.reicever_id;
     const time = event.time;
     const name = event.name;
+    const msg = content.message;
 
     var sId = $('#r_id').val();
     var uId = $('#u_id').val();
     var roleId = $('#role_id').val();
     
     
-    
-
     if (senderId != uId) {
-        let html = '<div class="user-comment-item cmt-left">' +
+        
+        let html = '';
+        if(content.filepath) {
+            html = 
+            '<div class="user-comment-item cmt-left">' +
+                '<div class="comment-username">' +
+                    '<span> ' + name + ' </span>' +
+                '</div>' +
+                '<div class="comment-detail">' +
+                    '<div class="preview-image">' +
+                        '<a href="'+ content.filepath + '" target="_blank">' +
+                            '<div class="bg-preview-image" style="background-image: url(' + content.filepath + ')">' +
+                            '</div>' +
+                        '</a>' +
+                    '</div>' +
+                    '<span>' +
+                        '<a href="' + content.filepath + '" target="_blank">' + content.filename + '</a>' +
+                    '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="comment-time cmt-left">' +
+                '<span>' + time + '</span>' +
+            '</div>'
+        } else {
+            html = '<div class="user-comment-item cmt-left">' +
                 '<div class="comment-username">' +
                 '<span>' + name + '</span>' +
                 '</div>' +
@@ -45,7 +68,9 @@ channel.subscribed(() => {
                 '</div>' +
                 '<div class="comment-time cmt-left">' +
                     '<span>' + time + '</span>' +
-                '</div>'
+                '</div>';
+        }
+        
 
         $('.user-comment-list').append(html);
         globalScripts.auto_scroll_comment_details();

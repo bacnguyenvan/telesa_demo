@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Log;
+use App\Events\ChatEvent;
 
 class AjaxController extends Controller {
     /**
@@ -80,6 +81,7 @@ class AjaxController extends Controller {
                 $lesson_id = $request->get('lesson');
                 $comment_id = $request->get('comment');
                 $replyId = $request->get('reply_id');
+                $userId = Auth::user()->id;
                 // File upload location
                 $location = 'uploads/comments/' . $comment_id;
                 // Upload file
@@ -106,10 +108,12 @@ class AjaxController extends Controller {
                 UserComments::where('comment_id', $comment_id)->delete();
                 // add new record for notification
                 $uc_data = array();
-                if (Auth::user()->role_id < 3) { // super admin and teacher
+                $roleId = Auth::user()->role_id;
+
+                if ($roleId < 3) { // super admin and teacher
                     $cmt_user_id = Comments::where('id', $comment_id)->pluck('user_id')->first();
                     $uc_data[] = array('user_id' => $cmt_user_id, 'comment_id' => $comment_id);
-                    $user_ids = User::where('role_id', '<', 3)->where('id', '<>', Auth::user()->id)->get();
+                    $user_ids = User::where('role_id', '<', 3)->where('id', '<>', $userId)->get();
                 } else { // student
                     $user_ids = User::where('role_id', '<', 3)->get();
                 }
@@ -131,6 +135,21 @@ class AjaxController extends Controller {
                 $data['time'] = show_comment_detail_created_time();
                 $data['success'] = 1;
                 $data['message'] = 'Uploaded Successfully!';
+
+                if ($roleId < 3) {
+                    $senderName = "Telesa English";
+                } else{
+                    $senderName = Auth::user()->first_name . " " . Auth::user()->last_name;
+                }
+
+                $content = [
+                    'filepath' => $path,
+                    'filename' => $original_filename,
+                    'message' => ''
+                ];
+
+                event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName));
+
             } else {
                 // Response
                 $data['success'] = 0;

@@ -155,7 +155,7 @@ class CommentController extends Controller {
         $user_id = Auth::user()->id;
         $role_id = Auth::user()->role_id;
         $lesson_id = $data['lesson_id'];
-        $content = $data['content'];
+        $content['message'] = $data['content'];
         $comment_id = $data['comment_id'];
         $replyId = $request->reply_id;
 
@@ -190,7 +190,7 @@ class CommentController extends Controller {
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $user_id,
                     'comment_id' => $comment_id,
-                    'content' => $content,
+                    'content' => $data['content'],
                     'reply_id' => $replyId
                 ]);
 
