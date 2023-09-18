@@ -114,7 +114,18 @@
                                             @endif
                                             <td scope="row">
                                                 <div class="text-right">
-                                                    <a type="button" href="@if (isset($item['comments']->id)) {{ route('admin_lesson_view', ['id' => $item['comments']->lesson_id, 'comment_id' => $item['comments']->id ]) }}@else {{ route('admin_lesson_view', $item['comments']->lesson_id) }} @endif?st_id=@if($item['last_comment']->user_id == Auth::user()->id){{$item['last_comment']->reply_id}}@else{{$item['comments']->user_id}}@endif" class="btn btn-warning waves-effect waves-light m-1">
+                                                    @php
+                                                        if( $item['last_comment']->role_id < 3 && (Auth::user()->role_id < 3 && Auth::user()->id != $item['last_comment']->user_id)) { // user is teacherB Who will comment conversation of teacherA with studentA
+                                                            $receiverId = $item['last_comment']->reply_id;
+                                                        } else {
+                                                            if($item['last_comment']->user_id == Auth::user()->id) {
+                                                                $receiverId = $item['last_comment']->reply_id;
+                                                            }else{
+                                                                $receiverId = $item['last_comment']->user_id;
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <a type="button" href="@if (isset($item['comments']->id)) {{ route('admin_lesson_view', ['id' => $item['comments']->lesson_id, 'comment_id' => $item['comments']->id ]) }}@else {{ route('admin_lesson_view', $item['comments']->lesson_id) }} @endif?st_id={{$receiverId}}" class="btn btn-warning waves-effect waves-light m-1">
                                                         <i class="zmdi zmdi-comment-text"></i> <span>View</span>
                                                     </a>
                                                 </div>
