@@ -28,12 +28,13 @@ channel.subscribed(() => {
     const name = event.name;
     const msg = content.message;
 
-    var sId = $('#r_id').val();
+    var rId = $('#r_id').val();
     var uId = $('#u_id').val();
     var roleId = $('#role_id').val();
+    console.log("sId: ", rId);
     
     
-    if (senderId != uId) {
+    if (receiverId == uId) {
         
         let html = '';
         if(content.filepath) {
