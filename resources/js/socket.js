@@ -19,7 +19,7 @@ const channel = window.Echo.channel('public.chat.1');
 channel.subscribed(() => {
     console.log('subscribed');
 }).listen('.chat-msg', (event) => { // chat-msg: broadcastAs
-    console.log("event: ",event);
+    console.log("event chat: ", event);
 
     var content = event.content;
     const senderId = event.sender_id;
@@ -27,19 +27,16 @@ channel.subscribed(() => {
     const time = event.time;
     const name = event.name;
     const msg = content.message;
+    const commentId = event.comment_id;
 
-    var rId = $('#r_id').val();
     var uId = $('#u_id').val();
-    var roleId = $('#role_id').val();
-    console.log("sId: ", rId);
-    
     
     if (receiverId == uId) {
         
         let html = '';
         if(content.filepath) {
             html = 
-            '<div class="user-comment-item cmt-left">' +
+            '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' +
                 '<div class="comment-username">' +
                     '<span> ' + name + ' </span>' +
                 '</div>' +
@@ -55,11 +52,11 @@ channel.subscribed(() => {
                     '</span>' +
                 '</div>' +
             '</div>' +
-            '<div class="comment-time cmt-left">' +
+            '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' +
                 '<span>' + time + '</span>' +
             '</div>'
         } else {
-            html = '<div class="user-comment-item cmt-left">' +
+            html = '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' +
                 '<div class="comment-username">' +
                 '<span>' + name + '</span>' +
                 '</div>' +
@@ -67,7 +64,7 @@ channel.subscribed(() => {
                         '<span>' + msg + '</span>' +
                     '</div>' +
                 '</div>' +
-                '<div class="comment-time cmt-left">' +
+                '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' +
                     '<span>' + time + '</span>' +
                 '</div>';
         }
@@ -77,3 +74,14 @@ channel.subscribed(() => {
         globalScripts.auto_scroll_comment_details();
     }
 })
+
+// remove message
+const channelRemoveMessage = window.Echo.channel('public.chat.remove');
+channelRemoveMessage.subscribed(() => {
+    console.log('subscribed channelRemoveMessage');
+}).listen('.remove-chat-msg', (event) => {
+    console.log("event remove: ", event);
+    
+    $('#cmtDetail_' + event.id).remove();
+    $('#cmtTime_' + event.id).remove();
+});
