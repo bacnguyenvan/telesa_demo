@@ -32,8 +32,10 @@ class VendorController extends Controller
     public function admin_lesson_view($id, $comment_id = null) {
 
         $userId = Auth::user()->id;
+        $roleId = Auth::user()->role_id;
+
         // check permission to view lesson
-        if (Auth::user()->role_id >= 3) {
+        if ($roleId >= 3) {
             $has_permission = CourseLesson::where('lesson_id', $id)
             ->leftJoin('user_courses', 'user_courses.course_id', '=', 'course_lessons.course_id')
             ->where('user_courses.user_id', Auth::user()->id)
@@ -51,7 +53,7 @@ class VendorController extends Controller
         $listComments = $fileInComment = array();
         
 
-        if(!request()->st_id) {
+        if($roleId >= 3) { // view chat with acc student
             $firstCommentOfUser = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
                              -> where('user_id', Auth::user()->id)
                              -> first();

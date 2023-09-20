@@ -170,7 +170,7 @@ class CommentController extends Controller {
                 $senderName = Auth::user()->first_name . " " . Auth::user()->last_name;
             }
 
-            event(new ChatEvent($user_id, $replyId, $content, $time, $senderName));
+            
             if (is_null_or_empty($comment_id)) {
                 if (in_array($role_id, array(1, 2))) {
                 } else if ($role_id != 3) {
@@ -193,6 +193,8 @@ class CommentController extends Controller {
                     'content' => $data['content'],
                     'reply_id' => $replyId
                 ]);
+
+                event(new ChatEvent($user_id, $replyId, $content, $time, $senderName, $cd_id ));
 
                 // update comment: updated_time
                 $updated_time = \Carbon\Carbon::createFromFormat('m d Y H:i A', date('m d Y H:iA'));

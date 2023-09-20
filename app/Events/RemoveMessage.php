@@ -10,29 +10,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ChatEvent implements ShouldBroadcast
+class RemoveMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private array $content;
+    private int $id;
     private int $senderId;
-    private int $receiverId;
-    private string $time;
-    private string $name;
-    private int $commentId;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(int $senderId, int $receiverId, array $content, string $time, string $name, $commentId)
+    public function __construct($senderId, $id)
     {
         $this->senderId = $senderId;
-        $this->receiverId = $receiverId;
-        $this->content = $content;
-        $this->time = $time;
-        $this->name = $name;
-        $this->commentId = $commentId;
+        $this->id = $id;
     }
 
     /**
@@ -42,23 +35,19 @@ class ChatEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('public.chat.1');
+        return new Channel('public.chat.remove');
     }
 
     public function broadcastAs()
     {
-        return 'chat-msg';
+        return 'remove-chat-msg';
     }
 
     public function broadcastWith()
     {
         return [
             'sender_id' => $this->senderId,
-            'reicever_id' => $this->receiverId,
-            'content' => $this->content,
-            'time' => $this->time,
-            'name' => $this->name,
-            'comment_id' => $this->commentId
+            'id' => $this->id
         ];
     }
 }

@@ -6365,29 +6365,37 @@ channel.subscribed(function () {
   console.log('subscribed');
 }).listen('.chat-msg', function (event) {
   // chat-msg: broadcastAs
-  console.log("event: ", event);
+  console.log("event chat: ", event);
   var content = event.content;
   var senderId = event.sender_id;
   var receiverId = event.reicever_id;
   var time = event.time;
   var name = event.name;
   var msg = content.message;
-  var sId = $('#r_id').val();
+  var commentId = event.comment_id;
   var uId = $('#u_id').val();
-  var roleId = $('#role_id').val();
 
-  if (senderId != uId) {
+  if (receiverId == uId) {
     var html = '';
 
     if (content.filepath) {
-      html = '<div class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span> ' + name + ' </span>' + '</div>' + '<div class="comment-detail">' + '<div class="preview-image">' + '<a href="' + content.filepath + '" target="_blank">' + '<div class="bg-preview-image" style="background-image: url(' + content.filepath + ')">' + '</div>' + '</a>' + '</div>' + '<span>' + '<a href="' + content.filepath + '" target="_blank">' + content.filename + '</a>' + '</span>' + '</div>' + '</div>' + '<div class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
+      html = '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span> ' + name + ' </span>' + '</div>' + '<div class="comment-detail">' + '<div class="preview-image">' + '<a href="' + content.filepath + '" target="_blank">' + '<div class="bg-preview-image" style="background-image: url(' + content.filepath + ')">' + '</div>' + '</a>' + '</div>' + '<span>' + '<a href="' + content.filepath + '" target="_blank">' + content.filename + '</a>' + '</span>' + '</div>' + '</div>' + '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
     } else {
-      html = '<div class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span>' + name + '</span>' + '</div>' + '<div class="comment-detail">' + '<span>' + msg + '</span>' + '</div>' + '</div>' + '<div class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
+      html = '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span>' + name + '</span>' + '</div>' + '<div class="comment-detail">' + '<span>' + msg + '</span>' + '</div>' + '</div>' + '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
     }
 
     $('.user-comment-list').append(html);
     globalScripts.auto_scroll_comment_details();
   }
+}); // remove message
+
+var channelRemoveMessage = window.Echo.channel('public.chat.remove');
+channelRemoveMessage.subscribed(function () {
+  console.log('subscribed channelRemoveMessage');
+}).listen('.remove-chat-msg', function (event) {
+  console.log("event remove: ", event);
+  $('#cmtDetail_' + event.id).remove();
+  $('#cmtTime_' + event.id).remove();
 });
 })();
 

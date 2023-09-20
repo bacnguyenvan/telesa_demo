@@ -63,7 +63,7 @@
                                     <div id="userCommentDetails" class="user-comment-list useselecttext">
                                         @if ($listComments)
                                         @foreach ($listComments as $k => $detail)
-                                        <div @if (Auth::user()->id == $detail->user_id) id="cmtDetail_{{ $detail->id }}" data-id="{{ $detail->id }}" @endif class="user-comment-item {{ get_comment_detail_classname(Auth::user()->id, $detail->user_id) }}">
+                                        <div id="cmtDetail_{{ $detail->id }}" data-id="{{ $detail->id }}"  class="user-comment-item {{ get_comment_detail_classname(Auth::user()->id, $detail->user_id) }}">
                                             @if (Auth::user()->id != $detail->user_id)
                                             <div class="comment-username">
                                                 <span>@if(Auth::user()->role_id < 3) {{ trim($detail->first_name . ' ' . $detail->last_name) }} @else Telesa English @endif</span>
@@ -92,7 +92,7 @@
                                             <div id="delCmt_{{ $detail->id }}" data-id="{{ $detail->id }}" class="hide btn-delcmt" style="display: none;"><i class="zmdi zmdi-delete"></i></div>
                                             @endif
                                         </div>
-                                        <div @if (Auth::user()->id == $detail->user_id) id="cmtTime_{{ $detail->id }}" @endif class="comment-time {{ get_comment_detail_classname(Auth::user()->id, $detail->user_id) }}">
+                                        <div id="cmtTime_{{ $detail->id }}"class="comment-time {{ get_comment_detail_classname(Auth::user()->id, $detail->user_id) }} comment-time-{{$detail->id}}">
                                             <span>{{ show_comment_detail_created_time($detail->created_time) }}</span>
                                         </div>
                                         @endforeach
@@ -217,7 +217,7 @@
                 @csrf
                 <input type="hidden" name="lesson" value="{{ $cur_lesson_id }}">
                 <input type="hidden" name="comment" value="{{ $cur_comment_id }}">
-                <input type="hidden" name="reply_id" value="{{ $cur_reply_id }}">
+                <input type="hidden" id="r_id" name="reply_id" value="{{ $cur_reply_id }}">
             </form>
             <div class="form-notice">
                 <p>Maximum upload file size: 150MB.</p>
