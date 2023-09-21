@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
+Route::get('/php', function() {
+    echo phpinfo();
+});
+
 Route::get('/test-ws', function () {
     event(new \App\Events\PlaygroundEvent());
     echo "oke";

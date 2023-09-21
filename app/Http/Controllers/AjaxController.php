@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Log;
 use App\Events\ChatEvent;
 use App\Events\RemoveMessage;
-
+use Illuminate\Support\Facades\Storage;
 class AjaxController extends Controller {
     /**
      * Create a new controller instance.
@@ -51,7 +51,7 @@ class AjaxController extends Controller {
     public function dropzone_store(Request $request) {
         $data = array();
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:153600',
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:153600',  // 153600 bytes = 150MB
             'comment' => 'required',
             'lesson' => 'required'
         ]);
@@ -84,10 +84,20 @@ class AjaxController extends Controller {
                 $replyId = $request->get('reply_id');
                 $userId = Auth::user()->id;
                 // File upload location
-                $location = 'uploads/comments/' . $comment_id;
+                // $location = 'uploads/comments/' . $comment_id;
+
+                $destinationPath = 'chat/' . $comment_id;
+
+                $disk = Storage::disk('s3');
+                $disk->put($destinationPath . '/' . $filename, file_get_contents($file), 'public');
+
                 // Upload file
-                $file->move($location, $filename);
-                $path = url('/') . '/' . $location . '/' . $filename;
+                // $file->move($location, $filename);
+                // $path = url('/') . '/' . $location . '/' . $filename;
+
+                $path = $disk->url($destinationPath . '/'  . $filename);
+
+                
 
                 // insert new comment - type upload file
                 // add comment detail
