@@ -90,7 +90,7 @@ class CommentController extends Controller {
             $userComment['new_comment'] = $has_new_comment ? 1 : 0;
 
             $userComment['label'] = UserLabel::Join('labels', 'user_label.label_id', '=', 'labels.id')
-                                                ->select('labels.name', 'labels.id')
+                                                ->select('labels.name', 'labels.id', 'labels.color')
                                                 ->where(['user_label.user_id' => Auth::user()->id, 'user_label.comment_id' => $value->id])
                                                 ->first();
 
@@ -144,7 +144,7 @@ class CommentController extends Controller {
         $lesson_id = $data['lesson_id'];
         $content['message'] = $data['content'];
         $comment_id = $data['comment_id'];
-        $replyId = $request->reply_id;
+        $replyId = $request->reply_id ?? 0;
 
         $response = array();
 

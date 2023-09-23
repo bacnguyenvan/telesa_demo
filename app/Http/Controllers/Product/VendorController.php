@@ -99,7 +99,7 @@ class VendorController extends Controller
 
         // remove notification: new comment
         if (!is_null_or_empty($comment_id)) {
-            if (Auth::user()->role_id == 2) {
+            if ($roleId == 2) {
                 UserComments::leftJoin('users', 'users.id', '=', 'user_comments.user_id')
                 ->where('comment_id', $comment_id)
                     ->where('users.role_id', 2)
@@ -109,7 +109,7 @@ class VendorController extends Controller
             }
         }
 
-        if (Auth::user()->role_id > 3 && is_null_or_empty($comment_id)) {
+        if ($roleId > 3 && is_null_or_empty($comment_id)) {
             $comment_id = Comments::where('user_id', Auth::user()->id)->where('lesson_id', $id)->pluck('id')->first();
             if (!is_null_or_empty($comment_id)) {
                 return redirect()->route('admin_lesson_view', ['id' => $id, 'comment_id' => $comment_id]);
@@ -130,7 +130,25 @@ class VendorController extends Controller
 
         $cur_reply_id = request()->st_id;
 
-        // dd($listComments);
+
+        if(!$cur_reply_id) { // User chat in lession
+            $commentLast = [];
+            if(count($listComments) > 0) {
+                $commentLast = $listComments[count($listComments) - 1];
+            }
+
+            if(!empty($commentLast)) {
+                if($roleId > 3) {
+                    if($commentLast->user_id == $userId) {
+                        $cur_reply_id = $commentLast->reply_id;
+                    } else {
+                        $cur_reply_id = $commentLast->user_id;
+                    }
+                }
+            }
+            
+        }
+        
        
 
         return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));

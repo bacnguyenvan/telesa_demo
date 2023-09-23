@@ -22,6 +22,7 @@
                                 </div>
                                 </form>
                             </div>
+                            @if(Auth::user()->role_id < 3)
                             <div class="d-flex" style="flex-basis: 280px;">
                                 <h6 style="flex-basis: 100px; padding-top: 15px;letter-spacing: 2.3px; font-weight: bold;">LABEL</h6>
                                 <div style="font-weight: bold;">
@@ -34,6 +35,7 @@
                                     <div class="lblmanagebtn pointer" onclick="loadModal()">Label management</div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                         <div class="card-body" style="background-color: rgba(0,0,0,.2);">
                             <div class="table-responsive">
@@ -51,18 +53,15 @@
                                     </thead>
                                     <tbody id="commentlist">
                                         @foreach ($userComments as $key => $item)
-                                        <tr class="user-comment @if ($item['new_comment'] > 0) new-comment @endif">
+                                        <tr class="@if(Auth::user()->role_id < 3 && empty($item['label']->name))user-comment @endif @if ($item['new_comment'] > 0)new-comment @endif">
                                             <td scope="row" @if(Auth::user()->role_id > 2) style="width: 10%;" @endif>
                                                 @if (!is_null($item['last_comment']))
-                                                    <div class="d-flex name-block">
-                                                        @if(!empty($item['label']->name))
-                                                        <div class="label-name">
-                                                            <span class="labelbtn" data-filter="3">{{$item['label']->name}}</span>
-                                                        </div>
-                                                        @endif
-                                                        <div class="label-tag" data-user_comment_id={{$item['comments']->id}}>
+                                                    <div class="d-flex">
+                                                        @if(empty($item['label']->name))
+                                                        <div class="label-tag label-tag-select" style="display: none" data-user_comment_id={{$item['comments']->id}}>
                                                             <span class="labeltip"></span> &nbsp;
                                                         </div>
+                                                        @endif
                                                         @if(Auth::user()->role_id > 2)
                                                         <div>
                                                             <img src="{{ asset('avatar.png') }}" height="56" alt="" srcset="" style="border-radius: 50%;">
@@ -80,10 +79,10 @@
                                                             @endif
                                                         </div>
                                                         <div class="px-3" style="letter-spacing: 2.3px; align-self:center">
-                                                            @if (!is_null($item['comments']->label))
-                                                                <div class="labelpack" style="min-width: 100px;">
+                                                            @if(!empty($item['label']->name))
+                                                                <div class="labelpack label-tag-select" style="min-width: 100px;" data-user_comment_id={{$item['comments']->id}}>
                                                                     <?php
-                                                                    $lbls = explode(",", $item['comments']->label);
+                                                                    $lbls = explode(",", $item['label']->color);
                                                                     foreach($lbls as $lbl) {
                                                                         echo "<span class='labeltip labeltip".$lbl."'></span>";
                                                                     }
@@ -452,7 +451,7 @@
         $(".label-tag").css("display", "none");
     });
 
-    $(".label-tag").on("click", function() {
+    $(".label-tag-select").on("click", function() {
         var user_comment_id = $(this).data('user_comment_id');
         $("#user-comment-id").val(user_comment_id);
         $('#label_tag_modal').modal('show');
@@ -490,19 +489,20 @@
 .label-tag {
     align-self: center;
     cursor: pointer;
-    display: none;
+}
+.label-tag-select{
+    cursor: pointer;
 }
 .card-label {
     cursor: pointer;
 }
 
 .label-name {
-    position: absolute;
-    top: -14px;
-    left: -9px;
+    cursor: pointer;
 }
 .name-block {
     position: relative;
 }
+
 </style>
 @endpush
