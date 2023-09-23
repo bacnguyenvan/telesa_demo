@@ -12,20 +12,23 @@
                         <div class="p-2 d-flex">
                             <h4 class="py-2" style="flex-basis: 100px; letter-spacing: 2.3px; font-weight: bold;">SEARCH</h4>
                             <div class="search-bar flex-grow-1 px-4 py-2">
+                                <form method="GET">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="searchtext" placeholder="NAME, COMMENT, FILES" />
+                                    <input type="text" class="form-control" name="k_search" id="searchtext" placeholder="NAME, COMMENT, FILES" value="{{$keySearch}}" />
                                     <div class="input-group-append">
-                                        <button class="btn btn-search" onclick="search()"><i class="zmdi zmdi-search"></i></button>
+                                        {{-- <button class="btn btn-search" onclick="search()"><i class="zmdi zmdi-search"></i></button> --}}
+                                        <button class="btn btn-search" type="submit"><i class="zmdi zmdi-search"></i></button>
                                     </div>
                                 </div>
+                                </form>
                             </div>
                             <div class="d-flex" style="flex-basis: 280px;">
                                 <h6 style="flex-basis: 100px; padding-top: 15px;letter-spacing: 2.3px; font-weight: bold;">LABEL</h6>
                                 <div style="font-weight: bold;">
                                     <div style="font-size: 9px; width: 180px; height: 40px; overflow: hidden;">
-                                        <span class="labelbtn checked" data-filter="-1" onclick="filterComments(-1, this)" >ALL</span>
+                                        <span class="labelbtn @if($labelId == '')checked @endif" data-filter="-1" onclick="filterComments(-1, this)" >ALL</span>
                                         @foreach($labels as $label)
-                                            <span class="labelbtn" data-filter="{{$label['id']}}" onclick="filterComments({{$label['id']}}, this)">{{ $label['name'] }}</span>
+                                            <span class="labelbtn @if($label['id'] == $labelId)checked @endif" data-filter="{{$label['id']}}" onclick="filterComments({{$label['id']}}, this)">{{ $label['name'] }}</span>
                                         @endforeach
                                     </div>
                                     <div class="lblmanagebtn pointer" onclick="loadModal()">Label management</div>
@@ -48,10 +51,18 @@
                                     </thead>
                                     <tbody id="commentlist">
                                         @foreach ($userComments as $key => $item)
-                                        <tr class="@if ($item['new_comment'] > 0) new-comment @endif">
+                                        <tr class="user-comment @if ($item['new_comment'] > 0) new-comment @endif">
                                             <td scope="row" @if(Auth::user()->role_id > 2) style="width: 10%;" @endif>
                                                 @if (!is_null($item['last_comment']))
-                                                    <div class="d-flex">
+                                                    <div class="d-flex name-block">
+                                                        @if(!empty($item['label']->name))
+                                                        <div class="label-name">
+                                                            <span class="labelbtn" data-filter="3">{{$item['label']->name}}</span>
+                                                        </div>
+                                                        @endif
+                                                        <div class="label-tag" data-user_comment_id={{$item['comments']->id}}>
+                                                            <span class="labeltip"></span> &nbsp;
+                                                        </div>
                                                         @if(Auth::user()->role_id > 2)
                                                         <div>
                                                             <img src="{{ asset('avatar.png') }}" height="56" alt="" srcset="" style="border-radius: 50%;">
@@ -205,6 +216,32 @@
     </div>
 </div>
 <!-- End Label Management Modal -->
+
+<div class="modal fade" id="label_tag_modal" tabindex="-1" aria-labelledby="productViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-flex">
+                    <i class="zmdi zmdi-arrow-left d-none pointer py-1 px-2" id="backbtn" onclick="onBack()"></i>
+                    <h2 class="modal-title" id="productViewModalLabel" >Select Label</h2>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="mainbodyview">
+                    <div id="content">
+                        @foreach($labels as $label)
+                            <div class="card-label select-label" data-label_id="{{$label->id}}">
+                                <span class="labeltip labeltip{{ $label['color'] }}"></span>&nbsp;&nbsp;&nbsp;{{ $label['name'] }}
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="user-comment-id"/>
 <script>
     var selected_color = 0;
     var labels = @json($labels);
@@ -236,6 +273,11 @@
         $('#colorpicker').addClass('d-none');
     }
     function addLabel() {
+        var labelName = $('#lblname').val();
+        if(labelName == '') {
+            alert("Vui lòng nhập tên label");
+            return;
+        } 
         $.ajax({
             type: "POST",
             url: "{{ url('/lessons/comments/addlabel') }}",
@@ -260,6 +302,7 @@
                     html_text += '</div>';
                 })
                 $('#content').html(html_text);
+                location.reload();
             }
         });
     }
@@ -307,7 +350,7 @@
                 var comments = userComments;
                 if($('.checked').data('filter') != -1) {
                     comments = userComments.filter(item => {
-                        if(item.comments.label && item.comments.label.includes($('.checked').data('filter')) === true)
+                        if(item.label && item.label.includes($('.checked').data('filter')) === true)
                             return true;
                     });
                 }
@@ -388,83 +431,78 @@
     function filterComments(id, e) {
         $('.labelbtn').removeClass('checked');
         $(e).addClass('checked');
-        var comments = userComments;
-        if(id != -1) {
-            comments = userComments.filter(item => {
-                if(item.comments.label && item.comments.label.includes(id) === true)
-                    return true;
-            });
+        if(id == -1) {
+            window.location.href = "/lessons/comments";
+            return;
         }
-        var html_text = '';
-        var labels_text = '';
-        labels_text += '<div class="labeldlg">';
-        labels.forEach(function(r) {
-            labels_text += '<div class="smalltip smalltip' + r.color + '"></div>' + r.name + '<br/>';
-        });
-        labels_text += '<div>Label management</div>';
-        labels_text += '</div>';
-        comments.forEach(function(r) {
-            html_text += '<tr class=" new-comment ">';
-            html_text += '<td scope="row">';
-            html_text += '<div class="d-flex">';
-            html_text += '<div>';
-            if(r.last_comment.photo) {
-                html_text += '<img src="{{ asset("") }}'+r.last_comment.photo+'" height="56" alt="" srcset="" style="border-radius: 50%;">';
-            } else {
-                html_text += '<img src="{{ asset("") }}avatar.png" height="56" alt="" srcset="" style="border-radius: 50%;">';
-            }
-            html_text += '</div>';
-            html_text += '<div class="px-3" style="letter-spacing: 2.3px;">';
-            if(r.comments.label) {
-                html_text += '<div class="labelpack" style="min-width: 100px;">';
-                let lbls = r.comments.label.split(',');
-                lbls.forEach(function (lbl) {
-                    html_text += '<span class="labeltip labeltip'+lbl + '"></span>';
-                });
-                html_text += labels_text;
-            }
-            html_text += '</div>';
-            if(r.last_comment.first_name || r.last_comment.last_name) {
-                html_text += '<div class="montserratfont">' + (r.last_comment.first_name + ' ' + r.last_comment.last_name).trim() + '</div>';
-            }
-            html_text += '</div>';
-            html_text += '</div>';
-            html_text += '</td>';
-            html_text += '<td scope="row">';
-            //get_sub_comment_detail
-            if(r.last_comment.content) {
-                html_text += '<div class="hover-text"><span>' + r.last_comment.content + '</span></div>';
-            }
-            html_text += '</td>';
-            html_text += '<td scope="row" style="letter-spacing: 2.3px;">';
-            // generate_comment_created_datetime
-            if(r.last_comment)
-                html_text += '<div class="montserratfont">'+ r.last_comment.created_time+ '</div>';
-            html_text += '</td>';
-            if(role_id < 3) {
-                html_text += '<td>';
-                if(r.last_comment.first_name || r.last_comment.last_name) {
-                    html_text += (r.last_comment.first_name + ' ' + r.last_comment.last_name).trim();
-                }
-                html_text += '</td>';
-            }
-            html_text += '<td scope="row">';
-            html_text += '<div class="text-right">';
-            html_text += '<a type="button" href="{{ url('admin_lesson_view') }}';
-            if(r.comments.id) {
-                html_text += '/' + r.comments.lession_id + '/' + r.comments.id;
-            }
-            else {
-                html_text += '/' + r.comments.lession_id;
-            }
-            html_text += '" class="btn btn-warning waves-effect waves-light m-1">';
-            html_text += '<i class="zmdi zmdi-comment-text"></i> <span>View</span>';
-            html_text += '</a>';
-            html_text += '</div>';
-            html_text += '</td>';
-            html_text += '</tr>';
-        });
-        $('#commentlist').html(html_text);
+        var currentURL = new URL(window.location.href);
+        const searchParams = currentURL.searchParams;
+        if (!searchParams.has('label_id')) {
+            searchParams.append('label_id', id);
+        } else {
+            searchParams.set('label_id', id);
+        }
+        
+        window.location.href = currentURL.href; 
     }
+
+    $('.user-comment').hover(function() {
+        $(this).find(".label-tag").css("display", "block");
+    }, function() {
+        $(".label-tag").css("display", "none");
+    });
+
+    $(".label-tag").on("click", function() {
+        var user_comment_id = $(this).data('user_comment_id');
+        $("#user-comment-id").val(user_comment_id);
+        $('#label_tag_modal').modal('show');
+    });
+
+    $(".select-label").on("click", function() {
+        var comment_id = $("#user-comment-id").val();
+        var label_id = $(this).data('label_id');
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('/lessons/comments/select-label') }}",
+            dataType: "JSON",
+            data: JSON.stringify({
+                comment_id: comment_id,
+                label_id: label_id
+            }),
+            contentType: 'application/json',
+            success: function(data) {
+                if(data.error) {
+                    console.log(data.error);
+                }
+                
+                location.reload();
+            }
+        });
+
+    });
+
 </script>
 @endsection
+
+@push('ccss')
+<style>
+.label-tag {
+    align-self: center;
+    cursor: pointer;
+    display: none;
+}
+.card-label {
+    cursor: pointer;
+}
+
+.label-name {
+    position: absolute;
+    top: -14px;
+    left: -9px;
+}
+.name-block {
+    position: relative;
+}
+</style>
+@endpush

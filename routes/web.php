@@ -135,6 +135,7 @@ Route::group([
     Route::any('/comments', 'CommentController@dashboard_user_comment')->name('dashboard_user_comment');
     Route::post('/comments/addlabel', 'CommentController@add_label')->name('add_label');
     Route::post('/comments/dellabel', 'CommentController@del_label')->name('del_label');
+    Route::post('/comments/select-label', 'CommentController@selectLabel')->name('add_label');
     Route::post('/add-new-comment', '\App\Http\Controllers\Admin\CommentController@add_new_comment')->name('add_new_comment');
 });
 

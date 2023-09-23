@@ -14,60 +14,44 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Events\ChatEvent;
+use App\Models\UserLabel;
+
 class CommentController extends Controller {
 
     public function dashboard_user_comment(Request $request) {
+        
+        $keySearch = $request->k_search;
+        $labelId = $request->label_id;
+
         $user_id = Auth::user()->id;
         $user_role =  Auth::user()->role_id;
-        if($user_role == 1 || $user_role == 2) {
-            if($request->isMethod('get')) {
-                $comments = Comments::orderBy('comments.updated_time', 'DESC')
-                    // ->leftJoin('user_comments', 'comments.id', '=', 'user_comments.comment_id')
-                    ->leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
-                    ->select('comments.*', 'vendors.name as lesson_name')
-                    ->get();
-            }
-            else if($request->isMethod('post')) {
-                $comments = Comments::orderBy('comments.updated_time', 'DESC')
-                    // ->leftJoin('user_comments', 'comments.id', '=', 'user_comments.comment_id')
-                    ->leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
-                    ->leftJoin('comment_detail', 'comment_detail.comment_id', '=', 'comments.id')
-                    ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
-                    ->select('comments.*', 'comment_detail.content as content','comment_detail.path' ,'vendors.name as lesson_name','users.first_name', 'users.last_name')
-                    ->where('content', 'like', '%'.$request->searchtext.'%')
-                    ->orWhere('first_name','like', '%'.$request->searchtext.'%')
-                    ->orWhere('last_name','like', '%'.$request->searchtext.'%')
-                    ->orWhere('path','like', '%'.$request->searchtext.'%')
-                    ->groupBy('comments.id')
-                    ->get();
-            }
-        } else {
+       
+        $comments = Comments::orderBy('comments.updated_time', 'DESC')
+            ->leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
+            ->leftJoin('comment_detail', 'comment_detail.comment_id', '=', 'comments.id')
+            ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
+            ->leftJoin('user_label', 'comments.id', '=', 'user_label.comment_id')
+            ->leftJoin('labels', 'user_label.label_id', '=', 'labels.id')
+            ->select('comments.*', 'vendors.name as lesson_name');
 
-            if($request->isMethod('get')) {
-                $comments = Comments::orderBy('comments.updated_time', 'DESC')
-                    // ->leftJoin('user_comments', 'comments.id', '=', 'user_comments.comment_id')
-                    ->leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
-                    ->select('comments.*', 'vendors.name as lesson_name')
-                    ->where('comments.user_id', $user_id)
-                    ->get();
-            }
-            else if($request->isMethod('post')) {
-                $comments = Comments::orderBy('comments.updated_time', 'DESC')
-                    // ->leftJoin('user_comments', 'comments.id', '=', 'user_comments.comment_id')
-                    ->leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
-                    ->leftJoin('comment_detail', 'comment_detail.comment_id', '=', 'comments.id')
-                    ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
-                    ->select('comments.*', 'comment_detail.content as content','comment_detail.path' ,'vendors.name as lesson_name','users.first_name', 'users.last_name')
-                    ->where('comments.user_id', $user_id)
-                    ->where('content', 'like', '%'.$request->searchtext.'%')
-                    ->orWhere('first_name','like', '%'.$request->searchtext.'%')
-                    ->orWhere('last_name','like', '%'.$request->searchtext.'%')
-                    ->orWhere('path','like', '%'.$request->searchtext.'%')
-                    ->groupBy('comments.id')
-                    ->get();
-            }
+        if(!is_null($labelId)) {
+            $comments = $comments -> where(['labels.id' => $labelId, 'user_label.user_id' => $user_id]);
+        }
+        if(!is_null($keySearch)) {
+            $comments = $comments->where('comment_detail.content', 'like', '%'.$keySearch.'%')
+                                ->orWhere('users.first_name','like', '%'.$keySearch.'%')
+                                ->orWhere('users.last_name','like', '%'.$keySearch.'%')
+                                ->orWhere('comment_detail.path','like', '%'.$keySearch.'%')
+                                ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"), 'LIKE', '%' . $keySearch . '%')
+                                ->groupBy('comments.id');
         }
 
+        if($user_role > 2) {
+            $comments = $comments->where('comments.user_id', $user_id);
+        }
+        
+        $comments = $comments->get();
+                    
         $userComments = [];
         $userIdArr = [];
 
@@ -77,7 +61,6 @@ class CommentController extends Controller {
             
             $latestComment = CommentDetail::orderBy('comment_detail.created_time', 'DESC')
                 ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
-                // ->where('comment_detail.user_id', '<>', $user_id)
                 ->select('comment_detail.*', 'users.first_name', 'users.last_name', 'users.username', 'users.email', 'users.role_id', 'users.photo')
                 ->where('comment_detail.comment_id', '=', $value->id)
                 ->first();
@@ -106,13 +89,17 @@ class CommentController extends Controller {
             $has_new_comment = UserComments::where('user_id', $user_id)->where('comment_id', $value->id)->pluck('id')->first();
             $userComment['new_comment'] = $has_new_comment ? 1 : 0;
 
+            $userComment['label'] = UserLabel::Join('labels', 'user_label.label_id', '=', 'labels.id')
+                                                ->select('labels.name', 'labels.id')
+                                                ->where(['user_label.user_id' => Auth::user()->id, 'user_label.comment_id' => $value->id])
+                                                ->first();
+
             $userComments[] = $userComment;
         }
 
         if($request->isMethod('get')) {
             $labels = Label::all();
-            // dd($userComments);
-            return view('admin.comment.index', compact('userComments', 'user_role', 'labels'));
+            return view('admin.comment.index', compact('userComments', 'user_role', 'labels', 'keySearch', 'labelId'));
         }
         else if($request->isMethod('post')) {
             return ['data' => $userComments];
@@ -231,4 +218,18 @@ class CommentController extends Controller {
         return response()->json($response);
     }
 
+    public function selectLabel(Request $request)
+    {
+        try {
+            $labelSelected = UserLabel::updateOrCreate(
+                ['user_id' => Auth::user()->id, 'comment_id' => $request->comment_id],
+                ['label_id' => $request->label_id]
+            );
+
+            $response = array('data' => $labelSelected);
+        } catch(Exception $e) {
+            $response = array('error' => $e->getMessage());
+        }
+        return $response;
+    }
 }
