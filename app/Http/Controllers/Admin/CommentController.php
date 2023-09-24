@@ -39,10 +39,15 @@ class CommentController extends Controller {
         }
         if(!is_null($keySearch)) {
             $comments = $comments->where('comment_detail.content', 'like', '%'.$keySearch.'%')
-                                ->orWhere('users.first_name','like', '%'.$keySearch.'%')
-                                ->orWhere('users.last_name','like', '%'.$keySearch.'%')
+                                ->OrWhere(function($query) use($keySearch) {
+                                    $query -> where(function($q) use($keySearch){
+                                            $q -> where('users.first_name','like', '%'.$keySearch.'%')
+                                            -> orWhere('users.last_name','like', '%'.$keySearch.'%')
+                                            -> orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"), 'LIKE', '%' . $keySearch . '%');
+                                    })
+                                    -> where('users.role_id', '>' , 2);
+                                })
                                 ->orWhere('comment_detail.path','like', '%'.$keySearch.'%')
-                                ->orWhere(DB::raw("CONCAT(users.first_name, ' ', users.last_name)"), 'LIKE', '%' . $keySearch . '%')
                                 ->groupBy('comments.id');
         }
 
@@ -91,7 +96,8 @@ class CommentController extends Controller {
 
             $userComment['label'] = UserLabel::Join('labels', 'user_label.label_id', '=', 'labels.id')
                                                 ->select('labels.name', 'labels.id', 'labels.color')
-                                                ->where(['user_label.user_id' => Auth::user()->id, 'user_label.comment_id' => $value->id])
+                                                ->where('user_label.comment_id', $value->id)
+                                                ->orderBy('user_label.id', 'DESC')
                                                 ->first();
 
             $userComments[] = $userComment;

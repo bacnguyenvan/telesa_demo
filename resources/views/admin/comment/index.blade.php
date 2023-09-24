@@ -29,10 +29,12 @@
                                     <div style="font-size: 9px; width: 180px; height: 40px; overflow: hidden;">
                                         <span class="labelbtn @if($labelId == '')checked @endif" data-filter="-1" onclick="filterComments(-1, this)" >ALL</span>
                                         @foreach($labels as $label)
-                                            <span class="labelbtn @if($label['id'] == $labelId)checked @endif" data-filter="{{$label['id']}}" onclick="filterComments({{$label['id']}}, this)">{{ $label['name'] }}</span>
+                                            <span class="labelbtn labeltip{{$label['color']}} @if($label['id'] == $labelId)checked @endif" data-filter="{{$label['id']}}" onclick="filterComments({{$label['id']}}, this)">{{ $label['name'] }}</span>
                                         @endforeach
                                     </div>
+                                    @if(Auth::user()->role_id == 1)
                                     <div class="lblmanagebtn pointer" onclick="loadModal()">Label management</div>
+                                    @endif
                                 </div>
                             </div>
                             @endif
