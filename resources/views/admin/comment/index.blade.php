@@ -26,7 +26,7 @@
                             <div class="d-flex" style="flex-basis: 280px;">
                                 <h6 style="flex-basis: 100px; padding-top: 15px;letter-spacing: 2.3px; font-weight: bold;">LABEL</h6>
                                 <div style="font-weight: bold;">
-                                    <div style="font-size: 9px; width: 180px; height: 40px; overflow: hidden;">
+                                    <div style="font-size: 9px; width: 180px; overflow: hidden;">
                                         <span class="labelbtn @if($labelId == '')checked @endif" data-filter="-1" onclick="filterComments(-1, this)" >ALL</span>
                                         @foreach($labels as $label)
                                             <span class="labelbtn labeltip{{$label['color']}} @if($label['id'] == $labelId)checked @endif" data-filter="{{$label['id']}}" onclick="filterComments({{$label['id']}}, this)">{{ $label['name'] }}</span>
@@ -178,14 +178,15 @@
                     <div id="content">
                         @foreach($labels as $label)
                             <div class="card-label">
-                                <span class="labeltip labeltip{{ $label['color'] }}"></span>&nbsp;&nbsp;&nbsp;{{ $label['name'] }}<i class="zmdi zmdi-delete float-right" onclick="delLabel({{ $label['id'] }})"></i>
+                                <span class="labeltip labeltip{{ $label['color'] }}"></span>&nbsp;&nbsp;&nbsp;{{ $label['name'] }}
+                                <i class="zmdi zmdi-delete float-right" onclick="delLabel({{ $label['id'] }})"></i>
+                                <i class="zmdi zmdi-edit float-right" onclick="editLabel({{ $label['id'] }}, {{ $label['color']}}, '{{ $label['name'] }}')"></i>
                             </div>
                         @endforeach
                     </div>
                     <div class="add-label-btn" onclick="onAdd()">+ Add Label</div>
                 </div>
                 <div id="addbodyview" class="d-none">
-                    <p>Edit labels</p>
                     <div class="input-group">
                         <input type="text" class="form-control border-radius" placeholder="Label Name" id="lblname" />
                         <div class="input-group-append position-relative">
@@ -211,6 +212,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary d-none" id="addBtn" onclick="addLabel()">Add Label</button>
+                <button type="button" class="btn btn-primary d-none" data-label_id="" data-label_name="" data-label_color="0" id="editBtn" onclick="updateLabel()">Update Label</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -242,6 +244,7 @@
     </div>
 </div>
 
+
 <input type="hidden" id="user-comment-id"/>
 <script>
     var selected_color = 0;
@@ -267,6 +270,7 @@
     }
     function loadModal() {
         $('#lblmngmodal').modal('show');
+        onBack();
     }
     function changeColor(index) {
         $('#showbtn').html('<span class="labeltip labeltip' + index + '"></span>');
@@ -274,6 +278,7 @@
         $('#colorpicker').addClass('d-none');
     }
     function addLabel() {
+        $("#lblname").val("")
         var labelName = $('#lblname').val();
         if(labelName == '') {
             alert("Vui lòng nhập tên label");
@@ -329,6 +334,8 @@
                         html_text += '</div>';
                     })
                     $('#content').html(html_text);
+
+                    location.reload();
                 }
             });
         }
@@ -447,10 +454,58 @@
         window.location.href = currentURL.href; 
     }
 
+    function editLabel(id, color, name) {
+        $('#productViewModalLabel').html('Update Label');
+        $('#backbtn').removeClass('d-none');
+        $('#mainbodyview').addClass('d-none');
+        $('#addbodyview').removeClass('d-none');
+        $('#editBtn').removeClass('d-none');
+
+        $("#editBtn").attr('data-label_id', id);
+        $("#editBtn").attr('data-label_color', color);
+        $("#lblname").val(name)
+
+        selected_color = color;
+        $('#showbtn').html('<span class="labeltip labeltip' + selected_color + '"></span>');
+
+    }
+
+    function updateLabel()
+    {
+        var name = $("#lblname").val();
+        var id = $("#editBtn").attr('data-label_id');
+        
+        $.ajax({
+            type: "POST",
+            url: "{{ url('/lessons/comments/edit-label') }}",
+            dataType: "JSON",
+            data: JSON.stringify({
+                name: name,
+                color: selected_color,
+                id: id
+            }),
+            contentType: 'application/json',
+            success: function(data) {
+                if(data.error) {
+                    console.log(data.error);
+                }
+
+                location.reload();
+            }
+        });
+        
+    }
+
     $('.user-comment').hover(function() {
         $(this).find(".label-tag").css("display", "block");
     }, function() {
         $(".label-tag").css("display", "none");
+    });
+
+    $('.card-label').hover(function() {
+        $(this).find(".zmdi-edit").css("display", "block");
+    }, function() {
+        $(".zmdi-edit").css("display", "none");
     });
 
     $(".label-tag-select").on("click", function() {
@@ -504,6 +559,11 @@
 }
 .name-block {
     position: relative;
+}
+
+.zmdi.zmdi-edit {
+    margin-right: 15px;
+    display: none;
 }
 
 </style>

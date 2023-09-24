@@ -94,11 +94,13 @@ class CommentController extends Controller {
             $has_new_comment = UserComments::where('user_id', $user_id)->where('comment_id', $value->id)->pluck('id')->first();
             $userComment['new_comment'] = $has_new_comment ? 1 : 0;
 
-            $userComment['label'] = UserLabel::Join('labels', 'user_label.label_id', '=', 'labels.id')
+            if($user_role < 3) {
+                $userComment['label'] = UserLabel::Join('labels', 'user_label.label_id', '=', 'labels.id')
                                                 ->select('labels.name', 'labels.id', 'labels.color')
                                                 ->where('user_label.comment_id', $value->id)
                                                 ->orderBy('user_label.id', 'DESC')
                                                 ->first();
+            }
 
             $userComments[] = $userComment;
         }
@@ -120,6 +122,19 @@ class CommentController extends Controller {
             $label->save();
             $labels = Label::all();
             $response = array('data' => $labels);
+        } catch(Exception $e) {
+            $response = array('error' => $e->getMessage());
+        }
+        return $response;
+    }
+
+    public function editLabel(Request $request) {
+        try {
+            $label = Label::find($request->id)->update([
+                'color' => $request->color,
+                'name' => $request->name
+            ]);
+            $response = array('data' => $label);
         } catch(Exception $e) {
             $response = array('error' => $e->getMessage());
         }
