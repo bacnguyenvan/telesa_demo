@@ -278,7 +278,6 @@
         $('#colorpicker').addClass('d-none');
     }
     function addLabel() {
-        $("#lblname").val("")
         var labelName = $('#lblname').val();
         if(labelName == '') {
             alert("Vui lòng nhập tên label");
