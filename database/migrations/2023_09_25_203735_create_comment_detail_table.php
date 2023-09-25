@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserLabelTable extends Migration
+class CreateCommentDetailTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateUserLabelTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_label', function (Blueprint $table) {
+        Schema::create('comment_detail', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
+            $table->integer('reply_id')->nullable();
             $table->integer('comment_id');
-            $table->integer('label_id');
+            $table->string('path', 255)->nullable();
+            $table->tinyInteger('type')->default(1)->comment('1: text, 2: file 3: audio, 4: video, 5: image');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateUserLabelTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_label');
+        Schema::dropIfExists('comment_detail');
     }
 }

@@ -17,13 +17,17 @@ class CreateVendorsTable extends Migration
             $table->id();
             $table->string('name',100)->nullable();
             $table->text('description')->nullable();
-            $table->string('mobile_no',100)->nullable();
-            $table->string('image',100)->nullable();
-            $table->string('email',100)->nullable();
-            $table->text('address')->nullable();
-            $table->string('creator',100)->nullable();
-            $table->string('slug',100)->nullable();
-            $table->integer('status')->default(1);
+            $table->string('image', 250)->nullable();
+            $table->string('audio01', 250)->nullable();
+            $table->string('audio02', 250)->nullable();
+            $table->string('audio03', 250)->nullable();
+            $table->string('file01', 250)->nullable();
+            $table->string('file02', 250)->nullable();
+            $table->string('file03', 250)->nullable();
+            $table->string('video01', 250)->nullable();
+            $table->string('video02', 250)->nullable();
+            $table->string('video03', 250)->nullable();
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
 

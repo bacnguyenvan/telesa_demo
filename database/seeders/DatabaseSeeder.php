@@ -30,20 +30,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        MainCategory::truncate();
-        Category::truncate();
-        SubCategory::truncate();
-        Brand::truncate();
-        Writer::truncate();
-        Publication::truncate();
-        Color::truncate();
-        Size::truncate();
-        Unit::truncate();
-        Vendor::truncate();
-        Product::truncate();
-        Image::truncate();
-        Status::truncate();
-
         // \App\Models\User::factory(10)->create();
 
         $category = [
@@ -616,18 +602,6 @@ class DatabaseSeeder extends Seeder
                 'created_at' => Carbon::now()->toDateTimeString()
             ]);
         }
-
-        // Products
-        DB::table('main_category_product')->truncate();
-        DB::table('category_product')->truncate();
-        DB::table('product_sub_category')->truncate();
-        DB::table('color_product')->truncate();
-        DB::table('product_size')->truncate();
-        DB::table('product_unit')->truncate();
-        DB::table('product_vendor')->truncate();
-        DB::table('product_writer')->truncate();
-        DB::table('product_publication')->truncate();
-        DB::table('image_product')->truncate();
 
         // insert 20 product
         $product_names = [

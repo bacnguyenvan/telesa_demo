@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateReviewsTable extends Migration
+class CreateFileResourcesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateReviewsTable extends Migration
      */
     public function up()
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('file_resources', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->nullable();
-            $table->integer('rattings')->nullable();
+            $table->string('name')->nullable();
             $table->text('description')->nullable();
-            $table->integer('parent_id')->nullable();
-            $table->string('creator',100)->nullable();
-            $table->string('slug',100)->nullable();
+            $table->string('pathfile')->nullable();
+            $table->string('type_file')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
@@ -33,6 +31,6 @@ class CreateReviewsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('file_resources');
     }
 }

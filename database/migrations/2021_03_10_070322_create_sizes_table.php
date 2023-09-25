@@ -18,7 +18,7 @@ class CreateSizesTable extends Migration
             $table->string('name',100)->nullable();
             $table->string('creator',100)->nullable();
             $table->string('slug',100)->nullable();
-            $table->integer('status')->default(1);
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
 

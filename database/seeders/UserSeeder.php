@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
 
         $user = new User();
         $user->role_id = 3;
-        $user->first_name = 'Mr. vua';
+        $user->first_name = 'Mr. st1';
         $user->last_name = 'modarator';
         $user->username = 'modarator';
         $user->photo = 'avatar.png';
@@ -61,7 +61,7 @@ class UserSeeder extends Seeder
 
         $user = new User();
         $user->role_id = 4;
-        $user->first_name = 'Mr. vua';
+        $user->first_name = 'Mr. st2';
         $user->last_name = 'user';
         $user->username = 'user';
         $user->photo = 'avatar.png';
@@ -74,7 +74,7 @@ class UserSeeder extends Seeder
 
         $user = new User();
         $user->role_id = 5;
-        $user->first_name = 'Mr. vua';
+        $user->first_name = 'Mr. u3';
         $user->last_name = 'subscriber';
         $user->username = 'subscriber';
         $user->photo = 'avatar.png';
