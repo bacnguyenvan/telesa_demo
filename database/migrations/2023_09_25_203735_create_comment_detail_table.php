@@ -19,6 +19,7 @@ class CreateCommentDetailTable extends Migration
             $table->integer('reply_id')->nullable();
             $table->integer('comment_id');
             $table->string('path', 255)->nullable();
+            $table->text('content')->nullable();
             $table->tinyInteger('type')->default(1)->comment('1: text, 2: file 3: audio, 4: video, 5: image');
             $table->datetime('created_time')->useCurrent();
             $table->timestamps();
