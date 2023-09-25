@@ -17,9 +17,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-
-        User::truncate();
-
         $user = new User();
         $user->role_id = 1;
         $user->first_name = 'Mr.Super';

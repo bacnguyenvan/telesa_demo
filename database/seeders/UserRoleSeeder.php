@@ -24,28 +24,28 @@ class UserRoleSeeder extends Seeder
         $user_role->save();
 
         $user_role = new UserRole();
-        $user_role->name = 'admin';
+        $user_role->name = 'Teacher';
         $user_role->serial = '2';
         $user_role->slug = 'admin';
         $user_role->created_at = Carbon::now()->toDateTimeString();
         $user_role->save();
 
         $user_role = new UserRole();
-        $user_role->name = 'modarator';
+        $user_role->name = 'Tài khoản bị khóa';
         $user_role->serial = '3';
         $user_role->slug = 'modarator';
         $user_role->created_at = Carbon::now()->toDateTimeString();
         $user_role->save();
 
         $user_role = new UserRole();
-        $user_role->name = 'user';
+        $user_role->name = 'Người dùng vãng lai';
         $user_role->serial = '4';
         $user_role->slug = 'user';
         $user_role->created_at = Carbon::now()->toDateTimeString();
         $user_role->save();
 
         $user_role = new UserRole();
-        $user_role->name = 'subscriber';
+        $user_role->name = 'Học sinh có tài khoản';
         $user_role->serial = '5';
         $user_role->slug = 'subscriber';
         $user_role->created_at = Carbon::now()->toDateTimeString();
