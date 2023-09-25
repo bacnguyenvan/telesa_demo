@@ -116,7 +116,7 @@ class VendorController extends Controller
             }
         }
         $cur_lesson_id = $id;
-        $cur_comment_id = '';
+        $cur_comment_id = $comment_id;
 
 
         $fileInComment = CommentDetail::orderBy('comment_detail.created_time', 'ASC')

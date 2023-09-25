@@ -11,7 +11,7 @@ $NO_LOGIN = false;
 
 // Single-user credentials
 // Example: $USER = 'user'; $PASSWORD = 'password';
-$USER = 'eta';
+$USER = 'root';
 $PASSWORD = 'eta@2020';
 
 // Multi-user credentials
