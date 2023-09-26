@@ -159,7 +159,7 @@ class AjaxController extends Controller {
                     'message' => ''
                 ];
 
-                event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id));
+                event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
 
             } else {
                 // Response

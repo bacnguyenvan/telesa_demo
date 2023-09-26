@@ -20,12 +20,13 @@ class ChatEvent implements ShouldBroadcast
     private string $time;
     private string $name;
     private int $commentId;
+    private int $type;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(int $senderId, int $receiverId, array $content, string $time, string $name, $commentId)
+    public function __construct(int $senderId, int $receiverId, array $content, string $time, string $name, $commentId, int $type = 1)
     {
         $this->senderId = $senderId;
         $this->receiverId = $receiverId;
@@ -33,6 +34,7 @@ class ChatEvent implements ShouldBroadcast
         $this->time = $time;
         $this->name = $name;
         $this->commentId = $commentId;
+        $this->type = $type;
     }
 
     /**
@@ -58,7 +60,8 @@ class ChatEvent implements ShouldBroadcast
             'content' => $this->content,
             'time' => $this->time,
             'name' => $this->name,
-            'comment_id' => $this->commentId
+            'comment_id' => $this->commentId,
+            'type' => $this->type
         ];
     }
 }

@@ -454,6 +454,7 @@
             event.preventDefault()
         }
     })
+
 </script>
 
 <script src="{{ asset('js/socket.js') }}"></script>

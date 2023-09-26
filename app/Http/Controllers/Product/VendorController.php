@@ -22,15 +22,20 @@ class VendorController extends Controller
 {
 
     public function lesson_index_view($courseId) {
-        $collection = CourseLesson::where('course_id', $courseId)->orderBy('sort_order', 'ASC')->orderBy('id', 'ASC')->orderBy('sort_order', 'DESC')->latest()->paginate(10);
+        $collection = CourseLesson::where('course_id', $courseId)
+                ->orderBy('sort_order', 'ASC')
+                ->orderBy('id', 'ASC')
+                ->orderBy('sort_order', 'DESC')
+                ->latest()
+                ->paginate(10);
         $listVendorUser = VendorUser::where('user_id', Auth::user()->id)->get();
 
         return view('admin.lessons.index', compact('collection', 'listVendorUser'));
     }
 
 
-    public function admin_lesson_view($id, $comment_id = null) {
-
+    public function admin_lesson_view($id, $comment_id = null) 
+    {
         $userId = Auth::user()->id;
         $roleId = Auth::user()->role_id;
 
@@ -108,28 +113,38 @@ class VendorController extends Controller
                 UserComments::where('comment_id', $comment_id)->where('user_id', Auth::user()->id)->delete();
             }
         }
-
+        
         if ($roleId > 3 && is_null_or_empty($comment_id)) {
             $comment_id = Comments::where('user_id', Auth::user()->id)->where('lesson_id', $id)->pluck('id')->first();
             if (!is_null_or_empty($comment_id)) {
                 return redirect()->route('admin_lesson_view', ['id' => $id, 'comment_id' => $comment_id]);
             }
         }
+
         $cur_lesson_id = $id;
         $cur_comment_id = $comment_id;
-
-
-        $fileInComment = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
-            ->leftJoin('comments', 'comments.id', '=', 'comment_detail.comment_id')
-            ->select('comment_detail.*')
-            ->where('comment_detail.type', '>', 1) /* 1: text */
-            ->where('comments.lesson_id', '=', $id)
-            ->where('comments.id', '=', $comment_id)
-            ->get();
-        $cur_comment_id = $comment_id;
-
         $cur_reply_id = request()->st_id;
 
+        $fileInComment = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+            ->select('comment_detail.*')
+            ->where('comment_detail.type', '>', 1); /* 1: text */
+        
+        if($roleId >= 3 ) {
+            $fileInComment = $fileInComment -> where(function($q) use($userId) {
+                $q -> where('comment_detail.user_id', $userId)
+                    -> orWhere('comment_detail.reply_id', $userId);
+            });
+        } else {
+            $fileInComment =  $fileInComment  -> where(function($q) use($userId, $cur_reply_id) {
+                $q 
+                    -> where('comment_detail.user_id', $cur_reply_id)
+                    -> orWhere('comment_detail.reply_id', $cur_reply_id);
+            });
+        }
+           
+        $fileInComment = $fileInComment  ->get();
+
+        
 
         if(!$cur_reply_id) { // User chat in lession
             $commentLast = [];
@@ -149,8 +164,6 @@ class VendorController extends Controller
             
         }
         
-       
-
         return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));
     }
 

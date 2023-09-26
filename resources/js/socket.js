@@ -28,6 +28,7 @@ channel.subscribed(() => {
     const name = event.name;
     const msg = content.message;
     const commentId = event.comment_id;
+    const type = event.type;
 
     var uId = $('#u_id').val();
     
@@ -69,10 +70,33 @@ channel.subscribed(() => {
                 '</div>';
         }
         
-
+        
         $('.user-comment-list').append(html);
         globalScripts.auto_scroll_comment_details();
     }
+
+    if(type > 1) {
+        var comment_content = 
+        '<div class="comment-file">' +
+            '<a class="cmt-file" title="' + content.filename + '" alt="' + content.filename + '" href="' + content.filepath + '" target="_blank">';
+
+        if(type == 2) {
+            comment_content += '<i class="zmdi zmdi-movie"></i>';
+        }else if(type == 3) {
+            comment_content += '<i class="zmdi zmdi-speaker"></i>';
+        }else if(type == 4) {
+            comment_content += '<i class="zmdi zmdi-movie"></i>';
+        }else if(type == 5) {
+            comment_content += '<i class="zmdi zmdi-image-o"></i>';
+        }
+                
+        comment_content += content.filename +
+            '</a>' +
+        '</div>';
+
+        $(".comment-files").append(comment_content);
+    }
+
 })
 
 // remove message
