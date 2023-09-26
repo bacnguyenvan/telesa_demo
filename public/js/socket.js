@@ -6375,6 +6375,8 @@ channel.subscribed(function () {
   var commentId = event.comment_id;
   var type = event.type;
   var uId = $('#u_id').val();
+  var roleId = $('#role_id').val();
+  var repId = $('#r_id').val();
 
   if (receiverId == uId) {
     var html = '';
@@ -6387,6 +6389,14 @@ channel.subscribed(function () {
 
     $('.user-comment-list').append(html);
     globalScripts.auto_scroll_comment_details();
+  }
+
+  console.log("roleId: ", roleId);
+  console.log("re: ", repId);
+  console.log("receiverId: ", receiverId);
+
+  if (roleId > 3) {
+    if (senderId != repId && uId != senderId) window.location.reload();
   }
 
   if (type > 1) {

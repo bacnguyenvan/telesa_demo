@@ -31,7 +31,9 @@ channel.subscribed(() => {
     const type = event.type;
 
     var uId = $('#u_id').val();
-    
+    var roleId = $('#role_id').val();
+    var repId = $('#r_id').val();
+
     if (receiverId == uId) {
         
         let html = '';
@@ -73,6 +75,13 @@ channel.subscribed(() => {
         
         $('.user-comment-list').append(html);
         globalScripts.auto_scroll_comment_details();
+    }
+
+    console.log("roleId: ", roleId);
+    console.log("re: ", repId);
+    console.log("receiverId: ", receiverId);
+    if(roleId > 3) {
+        if(senderId != repId && uId != senderId) window.location.reload();
     }
 
     if(type > 1) {
