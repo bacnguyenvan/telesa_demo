@@ -170,7 +170,7 @@
                                             @endif
                                         </tbody>
                                     </table>
-                                    @if($fileInComment && sizeof($fileInComment) > 0)
+                                    {{-- @if($fileInComment && sizeof($fileInComment) > 0) --}}
                                     <div class="comment-files">
                                         <h5>In Comment</h5>
                                         @foreach($fileInComment as $k => $file)
@@ -190,7 +190,7 @@
                                         </div>
                                         @endforeach
                                     </div>
-                                    @endif
+                                    {{-- @endif --}}
                                 </div>
                             </div>
                         </div>
@@ -220,7 +220,7 @@
                 <input type="hidden" id="r_id" name="reply_id" value="{{ $cur_reply_id }}">
             </form>
             <div class="form-notice">
-                <p>Maximum upload file size: 150MB.</p>
+                <p>Maximum upload file size: 350MB.</p>
             </div>
         </div>
         <div class="form-footer">

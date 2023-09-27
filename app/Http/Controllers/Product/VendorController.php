@@ -115,7 +115,7 @@ class VendorController extends Controller
         }
         
         if ($roleId > 3 && is_null_or_empty($comment_id)) {
-            $comment_id = Comments::where('user_id', Auth::user()->id)->where('lesson_id', $id)->pluck('id')->first();
+            $comment_id = Comments::where('user_id', Auth::user()->id)->pluck('id')->first();
             if (!is_null_or_empty($comment_id)) {
                 return redirect()->route('admin_lesson_view', ['id' => $id, 'comment_id' => $comment_id]);
             }

@@ -51,7 +51,7 @@ class AjaxController extends Controller {
     public function dropzone_store(Request $request) {
         $data = array();
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:153600',  // 153600 bytes = 150MB
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:358400',  // 358400 bytes = 350MB
             'comment' => 'required',
             'lesson' => 'required'
         ]);
