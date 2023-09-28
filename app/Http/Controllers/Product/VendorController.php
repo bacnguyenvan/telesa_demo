@@ -59,9 +59,11 @@ class VendorController extends Controller
         
 
         if($roleId >= 3) { // view chat with acc student
-            $firstCommentOfUser = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
+            $firstCommentOfUser = CommentDetail::orderBy('comment_detail.id', 'ASC')
                              -> where('user_id', Auth::user()->id)
                              -> first();
+
+            
             if(!empty($firstCommentOfUser->created_time)) {
                 $createTimeFirstComment = $firstCommentOfUser->created_time;
     

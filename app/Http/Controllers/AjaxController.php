@@ -15,6 +15,7 @@ use Log;
 use App\Events\ChatEvent;
 use App\Events\RemoveMessage;
 use Illuminate\Support\Facades\Storage;
+
 class AjaxController extends Controller {
     /**
      * Create a new controller instance.
@@ -50,16 +51,23 @@ class AjaxController extends Controller {
      */
     public function dropzone_store(Request $request) {
         $data = array();
+        $userId = Auth::user()->id;
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:358400',  // 358400 bytes = 350MB
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,3gp,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:358400',  // 358400 bytes = 350MB
             'comment' => 'required',
             'lesson' => 'required'
         ]);
 
 		try {
         if ($validator->fails()) {
+            $ext = $request->file->guessExtension() ?? "";
+            \Log::info("file: $ext, userid: $userId");
+            
             $data['success'] = 0;
-            $data['error'] = $validator->errors()->first('file'); // Error response
+            $data['error'] = "File không cho phép. " . $validator->errors()->first('file'); // Error 
+            
+            return response($data['error'], 422)->header('Content-Type', 'text/plain');
+
         } else {
             if ($request->file('file')) {
                 $file = $request->file('file');
@@ -82,7 +90,7 @@ class AjaxController extends Controller {
                 $lesson_id = $request->get('lesson');
                 $comment_id = $request->get('comment');
                 $replyId = $request->get('reply_id');
-                $userId = Auth::user()->id;
+                
                 // File upload location
                 // $location = 'uploads/comments/' . $comment_id;
 
@@ -107,7 +115,8 @@ class AjaxController extends Controller {
                     'comment_id' => $comment_id,
                     'content' => $original_filename,
                     'path' => $path,
-                    'type' => $file_type
+                    'type' => $file_type,
+                    'created_time' => Date('Y-m-d H:i:s')
                 ]);
 
                 // update comment: updated_time
@@ -159,7 +168,7 @@ class AjaxController extends Controller {
                     'message' => ''
                 ];
 
-                event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
+                // event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
 
             } else {
                 // Response
@@ -169,7 +178,8 @@ class AjaxController extends Controller {
         }
         } catch (Exception $e) {
                 $data['success'] = 0;
-                $data['message'] = 'File not uploaded. ' . $e->getMessage() . ' - ' . $e->getCode();        
+                $data['message'] = 'File not uploaded. ' . $e->getMessage() . ' - ' . $e->getCode();
+                return response($data['message'], 422)->header('Content-Type', 'text/plain');        
         }
 
         return response()->json($data);
@@ -196,7 +206,7 @@ class AjaxController extends Controller {
         $id = $request->id;
         $user_id = Auth::user()->id;
         if ($id) {
-            event(new RemoveMessage($user_id, $id));
+            // event(new RemoveMessage($user_id, $id));
             // delete comment detail in DB
             CommentDetail::where('id', $id)->where('user_id', $user_id)->delete();
         }

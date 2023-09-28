@@ -359,7 +359,7 @@
         Dropzone.autoDiscover = false;
         var myDropzone = new Dropzone(".dropzone", {
             maxFiles: 6,
-            maxFilesize: 150, // 150MB
+            maxFilesize: 350, // 350MB
             acceptedFiles: ".pdf,.doc,.docx,.xls,.xlsx,.m4a,.flac,.mp3,.wav,.aac,.mp4,.mov,.wmv,.avi,.mkv,.webm,.png,.jpg,.jpeg",
             maxfilesexceeded: function(file) {
                 this.removeFile(file);
