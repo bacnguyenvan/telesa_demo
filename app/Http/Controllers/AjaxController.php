@@ -168,7 +168,7 @@ class AjaxController extends Controller {
                     'message' => ''
                 ];
 
-                // event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
+                event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
 
             } else {
                 // Response
@@ -206,7 +206,7 @@ class AjaxController extends Controller {
         $id = $request->id;
         $user_id = Auth::user()->id;
         if ($id) {
-            // event(new RemoveMessage($user_id, $id));
+            event(new RemoveMessage($user_id, $id));
             // delete comment detail in DB
             CommentDetail::where('id', $id)->where('user_id', $user_id)->delete();
         }

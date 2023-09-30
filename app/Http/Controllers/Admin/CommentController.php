@@ -203,7 +203,7 @@ class CommentController extends Controller {
                     'created_time' => Date('Y-m-d H:i:s')
                 ]);
 
-                // event(new ChatEvent($user_id, $replyId, $content, $time, $senderName, $cd_id ));
+                event(new ChatEvent($user_id, $replyId, $content, $time, $senderName, $cd_id ));
 
                 // update comment: updated_time
                 $updated_time = \Carbon\Carbon::createFromFormat('m d Y H:i A', date('m d Y H:iA'));
