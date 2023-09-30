@@ -252,6 +252,7 @@
 
 <input type="hidden" id="user-comment-id"/>
 <script>
+    console.log("intooo");
     var selected_color = 0;
     var labels = @json($labels);
     var role_id = {{ Auth::user()->role_id  }};
@@ -540,6 +541,11 @@
             }
         });
 
+    });
+
+    window.history.pushState('', null, './');
+        $(window).on('popstate', function() {
+        location.reload(true);
     });
 
 </script>
