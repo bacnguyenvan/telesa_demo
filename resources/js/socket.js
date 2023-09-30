@@ -10,7 +10,10 @@ window.Echo = new Echo({
     wsPort: 6001,
     forceTLS: false,
     enabledTransports: ['ws', 'wss'],
+    wssPort: 6001,
+    disableStats: true,
 });
+
 
 
 // P2P
