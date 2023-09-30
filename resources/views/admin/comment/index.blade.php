@@ -55,6 +55,7 @@
                                     </thead>
                                     <tbody id="commentlist">
                                         @foreach ($userComments as $key => $item)
+                                        @if(!empty($item['last_comment']))
                                         <tr class="@if(Auth::user()->role_id < 3 && empty($item['label']->name))user-comment @endif @if ($item['new_comment'] > 0)new-comment @endif">
                                             <td scope="row" @if(Auth::user()->role_id > 2) style="width: 10%;" @endif>
                                                 @if (!is_null($item['last_comment']))
@@ -143,6 +144,7 @@
                                                 </div>
                                             </td>
                                         </tr>
+                                        @endif
                                         @endforeach
                                     </tbody>
                                 </table>
