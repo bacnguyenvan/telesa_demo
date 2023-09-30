@@ -243,10 +243,16 @@ class CommentController extends Controller {
     public function selectLabel(Request $request)
     {
         try {
-            $labelSelected = UserLabel::updateOrCreate(
-                ['user_id' => Auth::user()->id, 'comment_id' => $request->comment_id],
-                ['label_id' => $request->label_id]
-            );
+            if(!$request->label_id) {
+                $labelSelected = UserLabel::where(
+                    ['user_id' => Auth::user()->id, 'comment_id' => $request->comment_id])->delete();
+            } else {
+                $labelSelected = UserLabel::updateOrCreate(
+                    ['user_id' => Auth::user()->id, 'comment_id' => $request->comment_id],
+                    ['label_id' => $request->label_id]
+                );
+            }
+            
 
             $response = array('data' => $labelSelected);
         } catch(Exception $e) {

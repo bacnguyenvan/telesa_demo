@@ -237,6 +237,9 @@
                                 <span class="labeltip labeltip{{ $label['color'] }}"></span>&nbsp;&nbsp;&nbsp;{{ $label['name'] }}
                             </div>
                         @endforeach
+                        <div class="card-label select-label" data-label_id="0">
+                            <span class=""></span>&nbsp;&nbsp;&nbsp;Bỏ chọn Label
+                        </div>
                     </div>
                 </div>
             </div>
