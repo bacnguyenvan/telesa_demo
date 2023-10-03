@@ -125,7 +125,27 @@ class VendorController extends Controller
 
         $cur_lesson_id = $id;
         $cur_comment_id = $comment_id;
-        $cur_reply_id = request()->st_id;
+        $cur_reply_id = 0;
+        if($roleId < 3 ) { // Just get in teacher screen
+            $cur_reply_id = request()->st_id;
+        }
+
+        if(!$cur_reply_id) { // User chat in lession
+            $commentLast = [];
+            if(count($listComments) > 0) {
+                $commentLast = $listComments[count($listComments) - 1];
+            }
+
+            if(!empty($commentLast)) {
+                if($roleId > 3) {
+                    if($commentLast->user_id == $userId) {
+                        $cur_reply_id = $commentLast->reply_id;
+                    } else {
+                        $cur_reply_id = $commentLast->user_id;
+                    }
+                }
+            }
+        }
 
         $fileInComment = CommentDetail::orderBy('comment_detail.created_time', 'ASC')
             ->select('comment_detail.*')
@@ -148,23 +168,7 @@ class VendorController extends Controller
 
         
 
-        if(!$cur_reply_id) { // User chat in lession
-            $commentLast = [];
-            if(count($listComments) > 0) {
-                $commentLast = $listComments[count($listComments) - 1];
-            }
-
-            if(!empty($commentLast)) {
-                if($roleId > 3) {
-                    if($commentLast->user_id == $userId) {
-                        $cur_reply_id = $commentLast->reply_id;
-                    } else {
-                        $cur_reply_id = $commentLast->user_id;
-                    }
-                }
-            }
-            
-        }
+        
         
         return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));
     }

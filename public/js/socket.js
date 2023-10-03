@@ -6378,7 +6378,7 @@ channel.subscribed(function () {
   var roleId = $('#role_id').val();
   var repId = $('#r_id').val();
 
-  if (receiverId == uId) {
+  if (receiverId == uId && senderId == repId) {
     var html = '';
 
     if (content.filepath) {
@@ -6392,7 +6392,7 @@ channel.subscribed(function () {
   }
 
   if (roleId > 3) {
-    if (senderId != repId && uId != senderId) window.location.reload();
+    if (senderId != repId && uId != senderId && receiverId == uId) window.location.reload();
   }
 
   if (type > 1) {
