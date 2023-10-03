@@ -35,7 +35,7 @@ class CommentController extends Controller {
             ->select('comments.*', 'vendors.name as lesson_name');
 
         if(!is_null($labelId)) {
-            $comments = $comments -> where(['labels.id' => $labelId, 'user_label.user_id' => $user_id]);
+            $comments = $comments -> where(['labels.id' => $labelId]);
         }
         if(!is_null($keySearch)) {
             $comments = $comments->where('comment_detail.content', 'like', '%'.$keySearch.'%')
@@ -102,8 +102,10 @@ class CommentController extends Controller {
                                                 ->first();
             }
 
+
             $userComments[] = $userComment;
         }
+
 
         if($request->isMethod('get')) {
             $labels = Label::all();
@@ -245,11 +247,11 @@ class CommentController extends Controller {
         try {
             if(!$request->label_id) {
                 $labelSelected = UserLabel::where(
-                    ['user_id' => Auth::user()->id, 'comment_id' => $request->comment_id])->delete();
+                    ['comment_id' => $request->comment_id])->delete();
             } else {
                 $labelSelected = UserLabel::updateOrCreate(
-                    ['user_id' => Auth::user()->id, 'comment_id' => $request->comment_id],
-                    ['label_id' => $request->label_id]
+                    ['comment_id' => $request->comment_id],
+                    ['user_id' => Auth::user()->id, 'label_id' => $request->label_id]
                 );
             }
             
