@@ -78,6 +78,9 @@ class VendorController extends Controller
                 })
                 ->get();
             }
+
+            UserComments::where('reply_id', $userId)->delete();
+
         } else{ // view chat with acc teacher
             $studentId = request()->st_id;
 
@@ -101,6 +104,7 @@ class VendorController extends Controller
                     })
                     ->get();
             }
+            UserComments::where('user_id', $studentId)->delete();
         }
         
 
