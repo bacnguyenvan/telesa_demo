@@ -109,6 +109,9 @@
                                             <td scope="row">
                                                 @if (!is_null($item['last_comment']))
                                                 <div class="hover-text">
+                                                    @if($item['total_new_message'] > 0)
+                                                    <span class="total_new_message @if($item['total_new_message'] > 5) pd-5 @endif">@if($item['total_new_message'] > 5)5+@else{{$item['total_new_message']}}@endif</span>
+                                                    @endif
                                                     <span>{{ get_sub_comment_detail($item['last_comment']->content) }}</span>
                                                 </div>
                                                 @endif
@@ -553,6 +556,15 @@
 
 @push('ccss')
 <style>
+
+span.total_new_message.pd-5 {
+    padding: 5px
+} 
+span.total_new_message {
+    background: red;
+    padding: 2px 6px;
+    border-radius: 50%;
+}
 .label-tag {
     align-self: center;
     cursor: pointer;

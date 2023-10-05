@@ -59,7 +59,7 @@ class CommentController extends Controller {
                     
         $userComments = [];
         $userIdArr = [];
-
+        
         foreach ($comments as $key => $value) {
             if(in_array($value->user_id, $userIdArr)) continue;
             $userIdArr[] = $value->user_id;
@@ -106,6 +106,15 @@ class CommentController extends Controller {
             $userComments[] = $userComment;
         }
 
+        foreach($userComments as &$item) {
+            if($user_role < 3) {
+                $item['total_new_message'] = UserComments::where('user_id', $item['comments']->user_id)->count() ?? 0;
+            } else {
+                $item['total_new_message'] = UserComments::where('reply_id', $item['comments']->user_id)->count() ?? 0;
+            }
+            
+        }
+        
 
         if($request->isMethod('get')) {
             $labels = Label::all();
@@ -213,26 +222,12 @@ class CommentController extends Controller {
                 $response = array('success' => 'add new comment success.', 'id' => $cd_id, 'time' => $time);
 
                 // add notification
-                // delete record in table user_comments.comment_id = $comment_id
-                UserComments::where('comment_id', $comment_id)->delete();
-                // add new record for notification
-                $uc_data = array();
-                if (Auth::user()->role_id < 3) { // super admin and teacher
-                    $cmt_user_id = Comments::where('id', $comment_id)->pluck('user_id')->first();
-                    $uc_data[] = array('user_id' => $cmt_user_id, 'comment_id' => $comment_id);
-                    $user_ids = User::where('role_id', '<', 3)->where('id', '<>', Auth::user()->id)->get();
-                } else { // student
-                    $user_ids = User::where('role_id', '<', 3)->get();
-                }
-                foreach ($user_ids as $key => $value) {
-                    $_data = array(
-                        'user_id' => $value->id,
-                        'comment_id' => $comment_id
-                    );
-                    $uc_data[] = $_data;
-                }
-
-                UserComments::insert($uc_data);
+                $_data = array(
+                    'user_id' => $user_id,
+                    'comment_id' => $cd_id,
+                    'reply_id' => $replyId
+                );
+                analyst_student_message($role_id, $_data, $replyId);
 
             }
         } catch (Exception $e) {
@@ -262,4 +257,6 @@ class CommentController extends Controller {
         }
         return $response;
     }
+
+
 }

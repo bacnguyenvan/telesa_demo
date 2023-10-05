@@ -1,4 +1,5 @@
 <?php
+use App\Models\UserComments;
 
 if (!function_exists('get_sub_comment_detail')) {
     function get_sub_comment_detail($comment, $length = 35) {
@@ -93,5 +94,27 @@ if (!function_exists('get_icon_by_file_type')) {
         }
 
         return $icon;
+    }
+}
+
+
+if (!function_exists('analyst_student_message')) {
+    function analyst_student_message($roleId, $data, $replyId) {
+        if($roleId < 3) {
+            // delete to count new message of student
+            UserComments::where('user_id', $replyId)->delete();
+            UserComments::insert([
+                'user_id' => 0,
+                'comment_id' => $data['comment_id'],
+                'reply_id' => $data['reply_id']
+            ]);
+        } else {
+            UserComments::where('reply_id', $data['user_id'])->delete();
+            UserComments::insert([
+                'user_id' => $data['user_id'],
+                'comment_id' => $data['comment_id'],
+                'reply_id' => 0
+            ]);
+        }
     }
 }

@@ -52,6 +52,7 @@ class AjaxController extends Controller {
     public function dropzone_store(Request $request) {
         $data = array();
         $userId = Auth::user()->id;
+        $roleId = Auth::user()->role_id;
         $validator = Validator::make($request->all(), [
             'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,3gp,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:358400',  // 358400 bytes = 350MB
             'comment' => 'required',
@@ -110,7 +111,7 @@ class AjaxController extends Controller {
                 // insert new comment - type upload file
                 // add comment detail
                 $cd_id = DB::table('comment_detail')->insertGetId([
-                    'user_id' => Auth::user()->id,
+                    'user_id' => $userId,
                     'reply_id' => $replyId,
                     'comment_id' => $comment_id,
                     'content' => $original_filename,
@@ -124,28 +125,12 @@ class AjaxController extends Controller {
                 DB::table('comments')->where('id', $comment_id)->update(['updated_time' => $updated_time]);
 
                 // add notification
-                // delete record in table user_comments.comment_id = $comment_id
-                UserComments::where('comment_id', $comment_id)->delete();
-                // add new record for notification
-                $uc_data = array();
-                $roleId = Auth::user()->role_id;
-
-                if ($roleId < 3) { // super admin and teacher
-                    $cmt_user_id = Comments::where('id', $comment_id)->pluck('user_id')->first();
-                    $uc_data[] = array('user_id' => $cmt_user_id, 'comment_id' => $comment_id);
-                    $user_ids = User::where('role_id', '<', 3)->where('id', '<>', $userId)->get();
-                } else { // student
-                    $user_ids = User::where('role_id', '<', 3)->get();
-                }
-                foreach ($user_ids as $key => $value) {
-                    $_data = array(
-                        'user_id' => $value->id,
-                        'comment_id' => $comment_id
-                    );
-                    $uc_data[] = $_data;
-                }
-
-                UserComments::insert($uc_data);
+                $_data = array(
+                    'user_id' => $userId,
+                    'comment_id' => $cd_id,
+                    'reply_id' => $replyId
+                );
+                analyst_student_message($roleId, $_data, $replyId);
 
                 // Response
                 if($cd_id) {
