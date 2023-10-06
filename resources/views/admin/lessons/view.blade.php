@@ -106,7 +106,16 @@
                                             <i class="zmdi zmdi-attachment-alt"></i>
                                         </div>
                                         <div class="cmt-message-box">
-                                            <input id="inputUserComment" name="content" type="text" class="cmt-message-input" value="" placeholder="">
+                                            <div class="chat-box">
+                                                <div><i class="fa fa-reply"></i> Trả lời</div>
+                                                <div class="friend-message">
+                                                    
+                                                </div>
+                                                <div class="close-reply">x</div>
+                                            </div>
+                                            <div class="input-container">
+                                                <input id="inputUserComment" name="content" type="text" class="cmt-message-input" value="" placeholder="">
+                                            </div>
                                         </div>
                                         <div class="cmt-message-send">
                                             <button id="sendUserComment" class="btn btn-send-comment" type="button" data-comment="{{ $cur_comment_id }}" data-lesson="{{ $cur_lesson_id }}" data-reply="{{$cur_reply_id}}"><i class="zmdi zmdi-mail-send"></i></button>
@@ -455,9 +464,93 @@
         }
     })
 
+    // reply
+    $(".user-comment-item").on( "contextmenu", function() {
+        var content = $(this).find(".comment-detail").html();
+        $(".friend-message").html(content);
+        $('.chat-box').css("display", "block");
+        $("#inputUserComment").focus();
+    });
+
+    $(".close-reply").on("click", function() {
+        $('.chat-box').css("display", "none");
+        $("#inputUserComment").focus();
+    });
+
 </script>
 
 <script src="{{ asset('js/socket.js') }}"></script>
 
+@endpush
+
+@push('ccss')
+<style>
+.cmt-message-box {
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 5px;
+    /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
+    height: fit-content;
+}
+
+.chat-box {
+    background-color: #eaedf0;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border-left: 2px solid blue;
+    color: #081c36;
+    display: none;
+    position: relative;
+}
+
+.friend-message {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+    color: #081c36;
+}
+
+.friend-message .message {
+    background-color: #f2f2f2;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.input-container {
+    display: flex;
+    /* margin-top: 10px; */
+    margin-bottom: 10px;
+}
+
+.input-container input {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+}
+
+.input-container button {
+    background-color: #0d6efd;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.close-reply {
+    position: absolute;
+    top: -10px;
+    right: 0;
+    background: #978e8e;
+    padding: 0px 7px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: white;
+}
+
+</style>
 @endpush
 @endsection
