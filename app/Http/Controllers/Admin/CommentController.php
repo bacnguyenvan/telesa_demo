@@ -177,6 +177,7 @@ class CommentController extends Controller {
         $content['message'] = $data['content'];
         $comment_id = $data['comment_id'];
         $replyId = $request->reply_id ?? 0;
+        $replyCommentId = $request->reply_comment_id;
 
         $response = array();
 
@@ -211,8 +212,14 @@ class CommentController extends Controller {
                     'comment_id' => $comment_id,
                     'content' => $data['content'],
                     'reply_id' => $replyId,
+                    'reply_comment_id' => $replyCommentId,
                     'created_time' => Date('Y-m-d H:i:s')
                 ]);
+
+                if($replyCommentId) {
+                    $replyContent = CommentDetail::find($replyCommentId)->content ?? "";
+                    $content['reply_message'] = $replyContent;
+                }
 
                 event(new ChatEvent($user_id, $replyId, $content, $time, $senderName, $cd_id ));
 

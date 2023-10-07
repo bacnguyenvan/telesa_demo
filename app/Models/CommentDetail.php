@@ -10,4 +10,9 @@ class CommentDetail extends Model {
     protected $table = 'comment_detail';
 
     use HasFactory;
+
+    public function reply()
+    {
+        return $this->hasOne(CommentDetail::class,'id','reply_comment_id');
+    }
 }

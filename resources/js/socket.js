@@ -9,7 +9,8 @@ window.Echo = new Echo({
     wsHost: window.location.hostname,
     wsPort: 6001,
     enabledTransports: ['ws', 'wss'],
-    wssPort: 6001
+    wssPort: 6001,
+    // forceTLS: false
 });
 
 
@@ -60,11 +61,15 @@ channel.subscribed(() => {
                 '<span>' + time + '</span>' +
             '</div>'
         } else {
-            html = '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' +
+            let reply_message = content.reply_message;
+            let reply_message_class = reply_message ? "user-reply-comment-item" : "";
+            html = '<div id=cmtDetail_' + commentId + ' data-id='+ commentId + ' class="user-comment-item cmt-left ' + reply_message_class + '">' +
                 '<div class="comment-username">' +
                 '<span>' + name + '</span>' +
                 '</div>' +
-                    '<div class="comment-detail">' +
+                    '<div class="comment-detail">';
+            if(reply_message) html+= '<p class="reply-content"><i class="fa fa-reply"></i>' + reply_message + '</p>';
+            html +=
                         '<span>' + msg + '</span>' +
                     '</div>' +
                 '</div>' +

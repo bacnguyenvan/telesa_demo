@@ -169,10 +169,6 @@ class VendorController extends Controller
         }
            
         $fileInComment = $fileInComment  ->get();
-
-        
-
-        
         
         return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));
     }

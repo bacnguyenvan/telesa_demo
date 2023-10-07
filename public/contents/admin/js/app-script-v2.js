@@ -150,9 +150,11 @@ globalScripts = {
             }
         });
     },
-    insert_new_comment: function(id, content, time) {
-        let html = '<div id="cmtDetail_' + id + '" class="user-comment-item cmt-right">';
+    insert_new_comment: function(id, content, time, reply_comment_content) {
+        let reply = reply_comment_content ? "user-reply-comment-item" : "";
+        let html = '<div id="cmtDetail_' + id + '" data-id="' + id + '" class="user-comment-item cmt-right ' + reply + '">';
         html += '<div class="comment-detail">';
+        if(reply_comment_content) html+= '<p class="reply-content"><i class="fa fa-reply"></i>' + reply_comment_content + '</p>';
         html += '<span>' + content + '</span>';
         html += '</div>'
         html += '<div id="delCmt_' + id + '" data-id="' + id + '" class="hide btn-delcmt" style="display: none;"><i class="zmdi zmdi-delete"></i></div>';

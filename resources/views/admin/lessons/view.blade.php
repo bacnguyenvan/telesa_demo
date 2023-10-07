@@ -63,7 +63,7 @@
                                     <div id="userCommentDetails" class="user-comment-list useselecttext">
                                         @if ($listComments)
                                         @foreach ($listComments as $k => $detail)
-                                        <div id="cmtDetail_{{ $detail->id }}" data-id="{{ $detail->id }}"  class="user-comment-item {{ get_comment_detail_classname(Auth::user()->id, $detail->user_id) }}">
+                                        <div id="cmtDetail_{{ $detail->id }}" data-id="{{ $detail->id }}"  class="user-comment-item {{ get_comment_detail_classname(Auth::user()->id, $detail->user_id) }} @if($detail->reply_comment_id)user-reply-comment-item @endif">
                                             @if (Auth::user()->id != $detail->user_id)
                                             <div class="comment-username">
                                                 <span>@if(Auth::user()->role_id < 3) {{ trim($detail->first_name . ' ' . $detail->last_name) }} @else Telesa English @endif</span>
@@ -85,6 +85,9 @@
                                                 @if($detail->type > 1)
                                                 <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
                                                 @else
+                                                @if(!empty($detail->reply))
+                                                <p class="reply-content"><i class="fa fa-reply"></i>{{ Str::limit($detail->reply->content, 35, '...') }} </p>
+                                                @endif
                                                 <span>{{ $detail->content }}</span>
                                                 @endif
                                             </div>
@@ -118,7 +121,7 @@
                                             </div>
                                         </div>
                                         <div class="cmt-message-send">
-                                            <button id="sendUserComment" class="btn btn-send-comment" type="button" data-comment="{{ $cur_comment_id }}" data-lesson="{{ $cur_lesson_id }}" data-reply="{{$cur_reply_id}}"><i class="zmdi zmdi-mail-send"></i></button>
+                                            <button id="sendUserComment" class="btn btn-send-comment" type="button" data-comment="{{ $cur_comment_id }}" data-lesson="{{ $cur_lesson_id }}" data-reply="{{$cur_reply_id}}" data-reply_comment=""><i class="zmdi zmdi-mail-send"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -337,11 +340,15 @@
                 let lesson_id = $(this).attr('data-lesson');
                 let comment_id = $(this).attr('data-comment');
                 let reply_id = $(this).attr('data-reply');
+                let reply_comment_id = $(this).attr('data-reply_comment');
+                let reply_comment_content = $('#sendUserComment').attr('data-reply_comment_content');
+
                 let formData = {
                     comment_id: comment_id,
                     lesson_id: lesson_id,
                     content: content,
-                    reply_id: reply_id
+                    reply_id: reply_id,
+                    reply_comment_id: reply_comment_id
                 };
 
                 $.ajax({
@@ -350,7 +357,10 @@
                     data: formData,
                     success: function(response) {
                         if (response.success != '' && response.time != '') {
-                            globalScripts.insert_new_comment(response.id, content, response.time);
+                            globalScripts.insert_new_comment(response.id, content, response.time, reply_comment_content);
+                            $('.chat-box').css("display", "none");
+                            $('#sendUserComment').attr('data-reply_comment_content', "");
+                            $('#sendUserComment').attr('data-reply_comment', "");
                         }
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
@@ -417,6 +427,26 @@
                 }
             }
         });
+
+        // reply
+        $(document).on("contextmenu", ".user-comment-item", function(e) {
+            e.preventDefault();
+            let reply_comment_id = $(this).attr("data-id");
+            console.log("reply_comment_id: ", reply_comment_id);
+            var content = $(this).find(".comment-detail").html();
+            $(".friend-message").html(content);
+            $('.chat-box').css("display", "block");
+            $("#inputUserComment").focus();
+            $('#sendUserComment').attr('data-reply_comment', reply_comment_id);
+            $('#sendUserComment').attr('data-reply_comment_content', content);
+        });
+
+        $(".close-reply").on("click", function() {
+            $('.chat-box').css("display", "none");
+            $("#inputUserComment").focus();
+            $('#sendUserComment').attr('data-reply_comment', "")
+        });
+
     });
 </script>
 @endif
@@ -430,7 +460,7 @@
             e.preventDefault();
         });
         jQuery("body").on("contextmenu", function(e) {
-            return false;
+            // return false;
         });
     });
     jQuery(document).keydown(function(event) {
@@ -464,19 +494,6 @@
         }
     })
 
-    // reply
-    $(".user-comment-item").on( "contextmenu", function() {
-        var content = $(this).find(".comment-detail").html();
-        $(".friend-message").html(content);
-        $('.chat-box').css("display", "block");
-        $("#inputUserComment").focus();
-    });
-
-    $(".close-reply").on("click", function() {
-        $('.chat-box').css("display", "none");
-        $("#inputUserComment").focus();
-    });
-
 </script>
 
 <script src="{{ asset('js/socket.js') }}"></script>
@@ -485,6 +502,11 @@
 
 @push('ccss')
 <style>
+.reply-content {
+    text-align: left;
+    background: #8080803d;
+    color: #411919;
+}
 .cmt-message-box {
     margin: 0 auto;
     background-color: #fff;
