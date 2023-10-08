@@ -128,7 +128,7 @@ class VendorController extends Controller
         }
 
         $cur_lesson_id = $id;
-        $cur_comment_id = $comment_id;
+        $cur_comment_id = $comment_id ?? 0;
         $cur_reply_id = 0;
         if($roleId < 3 ) { // Just get in teacher screen
             $cur_reply_id = request()->st_id;
