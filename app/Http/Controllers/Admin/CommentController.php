@@ -191,21 +191,23 @@ class CommentController extends Controller {
             }
 
             
-            if (is_null_or_empty($comment_id)) {
+            if (is_null_or_empty($comment_id) || !$comment_id) {
                 if (in_array($role_id, array(1, 2))) {
                 } else if ($role_id != 3) {
                     // add comment
-                    $comment_id = Comments::where('user_id', $user_id)->where('lesson_id', $lesson_id)->pluck('id')->first();
+                    $comment_id = Comments::where('user_id', $user_id)->pluck('id')->first();
+                    
                     if (!$comment_id) {
                         $comment_id = DB::table('comments')->insertGetId([
                             'user_id' => $user_id,
                             'lesson_id' => $lesson_id
                         ]);
+
                     }
                 }
             }
 
-            if ($comment_id) {
+            if ($comment_id != "") {
                 // add comment detail
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $user_id,
