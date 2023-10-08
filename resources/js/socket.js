@@ -68,7 +68,7 @@ channel.subscribed(() => {
                 '<span>' + name + '</span>' +
                 '</div>' +
                     '<div class="comment-detail">';
-            if(reply_message) html+= '<p class="reply-content"><i class="fa fa-reply"></i>' + reply_message + '</p>';
+            if(reply_message) html+= '<p class="reply-content" data-id=' + content.reply_message_id + '><i class="fa fa-reply"></i>' + reply_message + '</p>';
             html +=
                         '<span>' + msg + '</span>' +
                     '</div>' +

@@ -86,7 +86,7 @@
                                                 <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
                                                 @else
                                                 @if(!empty($detail->reply))
-                                                <p class="reply-content"><i class="fa fa-reply"></i>{{ Str::limit($detail->reply->content, 35, '...') }} </p>
+                                                <p class="reply-content" data-id="{{ $detail->reply->id }}"><i class="fa fa-reply"></i>{{ Str::limit($detail->reply->content, 35, '...') }} </p>
                                                 @endif
                                                 <span>{{ $detail->content }}</span>
                                                 @endif
@@ -357,7 +357,7 @@
                     data: formData,
                     success: function(response) {
                         if (response.success != '' && response.time != '') {
-                            globalScripts.insert_new_comment(response.id, content, response.time, reply_comment_content);
+                            globalScripts.insert_new_comment(response.id, content, response.time, reply_comment_content, reply_comment_id);
                             $('.chat-box').css("display", "none");
                             $('#sendUserComment').attr('data-reply_comment_content', "");
                             $('#sendUserComment').attr('data-reply_comment', "");
@@ -432,8 +432,7 @@
         $(document).on("contextmenu", ".user-comment-item", function(e) {
             e.preventDefault();
             let reply_comment_id = $(this).attr("data-id");
-            console.log("reply_comment_id: ", reply_comment_id);
-            var content = $(this).find(".comment-detail").html();
+            var content = $(this).find(".comment-detail > span").html();
             $(".friend-message").html(content);
             $('.chat-box').css("display", "block");
             $("#inputUserComment").focus();
@@ -446,6 +445,23 @@
             $("#inputUserComment").focus();
             $('#sendUserComment').attr('data-reply_comment', "")
         });
+
+        $("#userCommentDetails").on("click", ".reply-content", function(e) {
+            var id = $(this).attr('data-id');
+            const replyElement = $("#cmtDetail_" + id);
+            
+            if (replyElement.length > 0) {
+                const scrollPosition = $("#userCommentDetails").scrollTop() + replyElement.offset().top - $("#userCommentDetails").offset().top;
+                
+                $("#userCommentDetails").animate(
+                    {
+                        scrollTop: scrollPosition
+                    },
+                    1000 // Adjust the duration of the scroll animation (in milliseconds)
+                );
+            }
+        });
+        
 
     });
 </script>
@@ -502,76 +518,78 @@
 
 @push('ccss')
 <style>
-.reply-content {
-    text-align: left;
-    background: #8080803d;
-    color: #411919;
-}
-.cmt-message-box {
-    margin: 0 auto;
-    background-color: #fff;
-    border-radius: 5px;
-    /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
-    height: fit-content;
-}
+    .reply-content {
+        text-align: left;
+        background: #8080803d;
+        color: #411919;
+        cursor: pointer;
+        font-style: italic;
+    }
+    .cmt-message-box {
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 5px;
+        /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
+        height: fit-content;
+    }
 
-.chat-box {
-    background-color: #eaedf0;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    border-left: 2px solid blue;
-    color: #081c36;
-    display: none;
-    position: relative;
-}
+    .chat-box {
+        background-color: #eaedf0;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border-left: 2px solid blue;
+        color: #081c36;
+        display: none;
+        position: relative;
+    }
 
-.friend-message {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 10px;
-    color: #081c36;
-}
+    .friend-message {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 10px;
+        color: #081c36;
+    }
 
-.friend-message .message {
-    background-color: #f2f2f2;
-    padding: 10px 15px;
-    border-radius: 5px;
-}
+    .friend-message .message {
+        background-color: #f2f2f2;
+        padding: 10px 15px;
+        border-radius: 5px;
+    }
 
-.input-container {
-    display: flex;
-    /* margin-top: 10px; */
-    margin-bottom: 10px;
-}
+    .input-container {
+        display: flex;
+        /* margin-top: 10px; */
+        margin-bottom: 10px;
+    }
 
-.input-container input {
-    flex-grow: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 5px 0 0 5px;
-    outline: none;
-}
+    .input-container input {
+        flex-grow: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px 0 0 5px;
+        outline: none;
+    }
 
-.input-container button {
-    background-color: #0d6efd;
-    border: none;
-    border-radius: 0 5px 5px 0;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-}
+    .input-container button {
+        background-color: #0d6efd;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        color: white;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
 
-.close-reply {
-    position: absolute;
-    top: -10px;
-    right: 0;
-    background: #978e8e;
-    padding: 0px 7px;
-    border-radius: 50%;
-    cursor: pointer;
-    color: white;
-}
+    .close-reply {
+        position: absolute;
+        top: -10px;
+        right: 0;
+        background: #978e8e;
+        padding: 0px 7px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: white;
+    }
 
 </style>
 @endpush

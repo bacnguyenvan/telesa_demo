@@ -218,7 +218,9 @@ class CommentController extends Controller {
 
                 if($replyCommentId) {
                     $replyContent = CommentDetail::find($replyCommentId)->content ?? "";
+                    $replyMessageId = CommentDetail::find($replyCommentId)->id ?? "";
                     $content['reply_message'] = $replyContent;
+                    $content['reply_message_id'] = $replyMessageId;
                 }
 
                 event(new ChatEvent($user_id, $replyId, $content, $time, $senderName, $cd_id ));
