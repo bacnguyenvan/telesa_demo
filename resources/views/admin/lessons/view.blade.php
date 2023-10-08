@@ -70,7 +70,7 @@
                                             </div>
                                             @endif
                                             <div class="comment-detail">
-                                                @if($detail->type == 2)
+                                                {{-- @if($detail->type == 2)
                                                 <div class="preview-file"><i class="zmdi zmdi-file"></i></div>
                                                 @elseif($detail->type == 3)
                                                 <div class="preview-file"><i class="zmdi zmdi-file"></i></div>
@@ -80,10 +80,23 @@
                                                 <div class="preview-image"><a href="{{ $detail->path }}" target="_blank">
                                                         <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}')"></div>
                                                     </a></div>
-                                                @endif
+                                                @endif --}}
 
                                                 @if($detail->type > 1)
-                                                <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
+                                                    @if($detail->type == 5 || $detail->type == 2)
+                                                    <div class="preview-image">
+                                                        <a href="{{ $detail->path }}" target="_blank">
+                                                            <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
+                                                        </a>
+                                                    </div>
+                                                    <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
+                                                    @else
+                                                        <video width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
+                                                            <source src="{{ $detail->path }}" type="video/mp4">
+                                                            Trình duyệt của bạn không hỗ trợ video HTML5.
+                                                        </video>
+                                                        <span>{{ $detail->content }}</span>
+                                                    @endif
                                                 @else
                                                 @if(!empty($detail->reply))
                                                 <p class="reply-content" data-id="{{ $detail->reply->id }}"><i class="fa fa-reply"></i>{{ Str::limit($detail->reply->content, 35, '...') }} </p>
