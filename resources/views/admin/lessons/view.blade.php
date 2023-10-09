@@ -85,13 +85,20 @@
                                                 @if($detail->type > 1)
                                                     @if($detail->type == 5 || $detail->type == 2)
                                                     <div class="preview-image">
+                                                        {{-- <a href="{{ $detail->path }}" target="_blank">
+                                                            <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
+                                                        </a> --}}
+                                                        @if($detail->type == 5)
+                                                        <img src="{{ $detail->path }}" loading="lazy" alt="Hình ảnh mô tả">
+                                                        @else
                                                         <a href="{{ $detail->path }}" target="_blank">
                                                             <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
                                                         </a>
+                                                        @endif
                                                     </div>
                                                     <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
                                                     @else
-                                                        <video width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
+                                                        <video loading="lazy" width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
                                                             <source src="{{ $detail->path }}" type="video/mp4">
                                                             Trình duyệt của bạn không hỗ trợ video HTML5.
                                                         </video>
@@ -603,7 +610,15 @@
         cursor: pointer;
         color: white;
     }
+    .preview-image {
+        width: 100px;
+        height: 100px;
+    }
 
+    .preview-image img {
+        width: 100%;
+        height: 100%;
+    }
 </style>
 @endpush
 @endsection
