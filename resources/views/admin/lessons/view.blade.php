@@ -232,7 +232,7 @@
                 <input type="hidden" id="r_id" name="reply_id" value="{{ $cur_reply_id }}">
             </form>
             <div class="form-notice">
-                <p>Maximum upload file size: 350MB.</p>
+                <p>Maximum upload file size: 500MB.</p>
             </div>
         </div>
         <div class="form-footer">
@@ -378,7 +378,7 @@
         Dropzone.autoDiscover = false;
         var myDropzone = new Dropzone(".dropzone", {
             maxFiles: 6,
-            maxFilesize: 350, // 350MB
+            maxFilesize: 500, // 500MB
             acceptedFiles: ".pdf,.doc,.docx,.xls,.xlsx,.m4a,.flac,.mp3,.wav,.aac,.mp4,.mov,.wmv,.avi,.mkv,.webm,.png,.jpg,.jpeg",
             maxfilesexceeded: function(file) {
                 this.removeFile(file);
