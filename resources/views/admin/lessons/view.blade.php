@@ -10,6 +10,10 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.js"></script>
 
+<link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">
+<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+
+
 <div class="content-wrapper @if(Auth::user()->role_id == 2) teacher-view-lesson @endif">
     <div class="container-fluid">
         @include('admin.includes.bread_cumb',['title'=>'Bài học: '. $vendor->name])
@@ -98,10 +102,13 @@
                                                     </div>
                                                     <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
                                                     @else
-                                                        <video loading="lazy" width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
+                                                        {{-- <video loading="lazy" width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
                                                             <source src="{{ $detail->path }}" type="video/mp4">
                                                             Trình duyệt của bạn không hỗ trợ video HTML5.
-                                                        </video>
+                                                        </video> --}}
+                                                        <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{}'>
+                                                            <source src="{{ $detail->path }}" type="application/x-mpegURL">
+                                                          </video>
                                                         <span>{{ $detail->content }}</span>
                                                     @endif
                                                 @else
@@ -530,6 +537,7 @@
         }
     })
 
+    
 </script>
 
 <script src="{{ asset('js/socket.js') }}"></script>
@@ -618,6 +626,17 @@
     .preview-image img {
         width: 100%;
         height: 100%;
+    }
+
+    /* m3u8 */
+    .video-js.vjs-default-skin {
+        width: 100%;
+        height: 150px;
+    }
+
+    .vjs-volume-panel.vjs-control.vjs-volume-panel-horizontal, button.vjs-picture-in-picture-control.vjs-control.vjs-button, .vjs-progress-control.vjs-control {
+        display: none;
+
     }
 </style>
 @endpush
