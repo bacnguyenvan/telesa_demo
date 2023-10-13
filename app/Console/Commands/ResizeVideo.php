@@ -50,9 +50,9 @@ class ResizeVideo extends Command
         
         $comments = CommentDetail::whereIn('comment_id', $commentIDs)
                                     ->whereIn('type', [3,4])
-                                    ->where('content', 'not like', "%.3mu8%")
+                                    ->where('content', 'not like', "%.m3u8%")
+                                    ->where('content', 'not like', "%.mp3%")
                                     ->select("id", "comment_id", "type", "content", "path")->get();
-
         foreach($comments as $com){
             
             // pa = "https://telesa.s3.ap-southeast-2.amazonaws.com/chat/2/gUrIuEJDJFpsE9ypjFRE-4.mp4";
@@ -64,7 +64,7 @@ class ResizeVideo extends Command
             $dirWithoutExtension = "chat/$env/$com->comment_id/" . $contentNew;
 
             
-            if($disk->exists($dir)) {
+            if($disk->exists($dir) && !$disk->exists($dirWithoutExtension)) {
                 FFMpeg::fromDisk('s3')->open($dir)
                     ->export()
                     ->toDisk('s3')

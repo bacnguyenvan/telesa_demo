@@ -104,19 +104,25 @@ class AjaxController extends Controller {
                 $disk = Storage::disk('s3');
                 $dir = $destinationPath . '/ '. $filename ;
                 $disk->put($dir, file_get_contents($file), 'public');
+                $path = $disk->url($dir);
+                $fileConvert = $filename;
 
                 // convert
-                $fileWithoutExt = pathinfo($filename, PATHINFO_FILENAME);
-                $dirWithoutExtension = $destinationPath . '/' .  $fileWithoutExt . ".m3u8";
-                FFMpeg::fromDisk('s3')->open($dir)
-                    ->export()
-                    ->toDisk('s3')
-                    ->inFormat(new X264)
-                    ->save("$dirWithoutExtension", 'public');
 
-                $path = $disk->url($dirWithoutExtension);
-                $disk->delete($dir);
-                // remove original file
+                if($ext != "mp3") {
+                    $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
+                    $dirConvert = $destinationPath . '/' . $fileConvert;
+                
+                    FFMpeg::fromDisk('s3')->open($dir)
+                        ->export()
+                        ->toDisk('s3')
+                        ->inFormat(new X264)
+                        ->save("$dirConvert", 'public');
+
+                    $path = $disk->url($dirConvert);
+                    $disk->delete($dir);
+                }
+                
 
                 // insert new comment - type upload file
                 // add comment detail
@@ -124,7 +130,7 @@ class AjaxController extends Controller {
                     'user_id' => $userId,
                     'reply_id' => $replyId,
                     'comment_id' => $comment_id,
-                    'content' =>  $fileWithoutExt . ".m3u8",
+                    'content' =>  $fileConvert,
                     'path' => $path,
                     'type' => $file_type,
                     'created_time' => Date('Y-m-d H:i:s')
