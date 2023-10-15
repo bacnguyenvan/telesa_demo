@@ -52,7 +52,9 @@ class ResizeVideo extends Command
                                     ->whereIn('type', [3,4])
                                     ->where('content', 'not like', "%.m3u8%")
                                     ->where('content', 'not like', "%.mp3%")
-                                    ->select("id", "comment_id", "type", "content", "path")->get();
+                                    ->select("id", "comment_id", "type", "content", "path")
+                                    ->orderBy('id', 'DESC')
+                                    ->get();
         foreach($comments as $com){
             
             // pa = "https://telesa.s3.ap-southeast-2.amazonaws.com/chat/2/gUrIuEJDJFpsE9ypjFRE-4.mp4";
