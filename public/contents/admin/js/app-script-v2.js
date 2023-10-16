@@ -168,14 +168,49 @@ globalScripts = {
     },
     insert_new_file: function(filename, filepath, preview, time, detail_id) {
         let data_id = typeof detail_id != "undefined" ? detail_id : filename;
+
+        const lastDotIndex = filename.lastIndexOf('.');
+        var ext = filename.substring(lastDotIndex + 1);
+        ext = ext.toLowerCase();
+        console.log("ext: ", ext);
+        var file_type = '';
+
+        if (['pdf', 'doc', 'docx', 'xls', 'xlsx'].includes(ext)) {
+            file_type = 2;
+        } else if (['m4a', 'flac', 'mp3', 'wav', 'aac'].includes(ext)) {
+            file_type = 3;
+        } else if (['mp4', 'mov', 'wmv', 'avi', 'mkv', 'webm'].includes(ext)) {
+            file_type = 4;
+        } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+            file_type = 5;
+        }
+
+
         let html = '<div id="cmtDetail_' + detail_id + '" class="user-comment-item cmt-right" data-name="' + filename + '" data-id="' + data_id + '">';
         html += '<div class="comment-detail">';
         if(typeof preview != "undefined" && preview != "") {
             html += '<div class="preview-image"><img src="' + preview + '"></div>';
         } else {
-            html += '<div class="preview-file"><i class="zmdi zmdi-file-text"></i></div>';
+            if(file_type != "3" && file_type != "4") {
+                html += '<div class="preview-file"><i class="zmdi zmdi-file-text"></i></div>';
+            }
         }
+
+        if(file_type == "3") {
+            html += '<video loading="lazy" width="100%" height="50px" controls>' +
+                '<source src="' + filepath + '" type="video/mp4">' +
+            '</video>';
+        } else if(file_type == "4") {
+            html += '<video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup="{}">' +
+                '<source src="' + filepath + '" type="application/x-mpegURL">' +
+            '</video>';
+        } else {
+        }
+
         html += '<span><a href="' + filepath + '" target="_blank">' + filename + '</a></span>';
+
+        
+
         html += '</div>';
         html += '<div id="delCmt_' + detail_id + '" data-id="' + detail_id + '" class="hide btn-delcmt" style="display: none;"><i class="zmdi zmdi-delete"></i></div>';
         html += '</div>';

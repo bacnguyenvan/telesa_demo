@@ -109,7 +109,7 @@ class AjaxController extends Controller {
 
                 // convert
 
-                if($ext != "mp3") {
+                if($file_type == "4") {
                     $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
                     $dirConvert = $destinationPath . '/' . $fileConvert;
                 

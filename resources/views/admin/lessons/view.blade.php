@@ -103,7 +103,7 @@
                                                     <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
                                                     @else
                                                         @if($detail->type == 3)
-                                                        <video loading="lazy" width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
+                                                        <video loading="lazy" width="100%" height="50px" controls>
                                                             <source src="{{ $detail->path }}" type="video/mp4">
                                                             Trình duyệt của bạn không hỗ trợ video HTML5.
                                                         </video>
@@ -691,7 +691,7 @@
     
 </script>
 
-{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
+<script src="{{ asset('js/socket.js') }}"></script>
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 
