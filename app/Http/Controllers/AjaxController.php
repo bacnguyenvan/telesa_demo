@@ -27,7 +27,7 @@ class AjaxController extends Controller {
     public function get_new_comments() {
         if ($user_id = Auth::user()->id) {
             $new_comments = UserComments::orderBy('id', 'ASC')
-                ->where('user_id', $user_id)
+                ->where('reply_id', $user_id)
                 ->where('new_comment', 1)
                 ->get();
             $count_new = $new_comments->count();
@@ -56,15 +56,15 @@ class AjaxController extends Controller {
         $userId = Auth::user()->id;
         $roleId = Auth::user()->role_id;
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,3gp,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:358400',  // 358400 bytes = 350MB
+            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,3gp,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:512000',  // 512000 bytes = 500MB
             'comment' => 'required',
             'lesson' => 'required'
         ]);
 
 		try {
         if ($validator->fails()) {
-            $ext = $request->file->guessExtension() ?? "";
-            \Log::info("file: $ext, userid: $userId");
+            $err = $validator->errors()->first('file') ?? "";
+            \Log::info("err: $err, userid: $userId");
             
             $data['success'] = 0;
             $data['error'] = "File không cho phép. " . $validator->errors()->first('file'); // Error 
