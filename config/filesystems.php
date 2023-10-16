@@ -50,8 +50,9 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
+            'visibility' => 'public',
+            'use_path_style_endpoint' => true
         ],
-
     ],
 
     /*

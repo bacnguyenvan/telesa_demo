@@ -15,6 +15,8 @@ use Log;
 use App\Events\ChatEvent;
 use App\Events\RemoveMessage;
 use Illuminate\Support\Facades\Storage;
+use FFMpeg;
+use FFMpeg\Format\Video\X264;
 
 class AjaxController extends Controller {
     /**
@@ -71,10 +73,11 @@ class AjaxController extends Controller {
 
         } else {
             if ($request->file('file')) {
+                set_time_limit(300);
+
                 $file = $request->file('file');
                 $original_filename = $file->getClientOriginalName();
-                // $original_filetype = $file->getClientOriginalExtension();
-                // $orginal_minetype = $file->getClientMimeType();
+                $strRand = generate_random_string(20);
                 $file_type = '';
                 $ext = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
                 if (in_array($ext, array('pdf', 'doc', 'docx', 'xls', 'xlsx'))) {
@@ -87,25 +90,38 @@ class AjaxController extends Controller {
                     $file_type = 5;
                 }
 
-                $filename = generate_random_string(20) . '-' . $original_filename;
+                $filename = $strRand . '-' . $original_filename;
+
                 $lesson_id = $request->get('lesson');
                 $comment_id = $request->get('comment');
                 $replyId = $request->get('reply_id');
                 
                 // File upload location
                 // $location = 'uploads/comments/' . $comment_id;
-
-                $destinationPath = 'chat/' . $comment_id;
+                $env = config("app.env");
+                $destinationPath = 'chat/' . $env . "/" . $comment_id;
 
                 $disk = Storage::disk('s3');
-                $disk->put($destinationPath . '/' . $filename, file_get_contents($file), 'public');
+                $dir = $destinationPath . '/ '. $filename ;
+                $disk->put($dir, file_get_contents($file), 'public');
+                $path = $disk->url($dir);
+                $fileConvert = $filename;
 
-                // Upload file
-                // $file->move($location, $filename);
-                // $path = url('/') . '/' . $location . '/' . $filename;
+                // convert
 
-                $path = $disk->url($destinationPath . '/'  . $filename);
+                if($ext != "mp3") {
+                    $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
+                    $dirConvert = $destinationPath . '/' . $fileConvert;
+                
+                    FFMpeg::fromDisk('s3')->open($dir)
+                        ->export()
+                        ->toDisk('s3')
+                        ->inFormat(new X264)
+                        ->save("$dirConvert", 'public');
 
+                    $path = $disk->url($dirConvert);
+                    $disk->delete($dir);
+                }
                 
 
                 // insert new comment - type upload file
@@ -114,7 +130,7 @@ class AjaxController extends Controller {
                     'user_id' => $userId,
                     'reply_id' => $replyId,
                     'comment_id' => $comment_id,
-                    'content' => $original_filename,
+                    'content' =>  $fileConvert,
                     'path' => $path,
                     'type' => $file_type,
                     'created_time' => Date('Y-m-d H:i:s')
@@ -161,7 +177,7 @@ class AjaxController extends Controller {
                 $data['message'] = 'File not uploaded.';
             }
         }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
                 $data['success'] = 0;
                 $data['message'] = 'File not uploaded. ' . $e->getMessage() . ' - ' . $e->getCode();
                 return response($data['message'], 422)->header('Content-Type', 'text/plain');        

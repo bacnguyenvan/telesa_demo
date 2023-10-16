@@ -10,6 +10,10 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.js"></script>
 
+<link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">
+<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+
+
 <div class="content-wrapper @if(Auth::user()->role_id == 2) teacher-view-lesson @endif">
     <div class="container-fluid">
         @include('admin.includes.bread_cumb',['title'=>'Bài học: '. $vendor->name])
@@ -70,7 +74,7 @@
                                             </div>
                                             @endif
                                             <div class="comment-detail">
-                                                @if($detail->type == 2)
+                                                {{-- @if($detail->type == 2)
                                                 <div class="preview-file"><i class="zmdi zmdi-file"></i></div>
                                                 @elseif($detail->type == 3)
                                                 <div class="preview-file"><i class="zmdi zmdi-file"></i></div>
@@ -80,10 +84,36 @@
                                                 <div class="preview-image"><a href="{{ $detail->path }}" target="_blank">
                                                         <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}')"></div>
                                                     </a></div>
-                                                @endif
+                                                @endif --}}
 
                                                 @if($detail->type > 1)
-                                                <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
+                                                    @if($detail->type == 5 || $detail->type == 2)
+                                                    <div class="preview-image">
+                                                        {{-- <a href="{{ $detail->path }}" target="_blank">
+                                                            <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
+                                                        </a> --}}
+                                                        @if($detail->type == 5)
+                                                        <img src="{{ $detail->path }}" loading="lazy" alt="Hình ảnh mô tả">
+                                                        @else
+                                                        <a href="{{ $detail->path }}" target="_blank">
+                                                            <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
+                                                        </a>
+                                                        @endif
+                                                    </div>
+                                                    <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
+                                                    @else
+                                                        @if($detail->type == 3)
+                                                        <video loading="lazy" width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
+                                                            <source src="{{ $detail->path }}" type="video/mp4">
+                                                            Trình duyệt của bạn không hỗ trợ video HTML5.
+                                                        </video>
+                                                        @else
+                                                        <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{}'>
+                                                            <source src="{{ $detail->path }}" type="application/x-mpegURL">
+                                                        </video>
+                                                        @endif
+                                                        <span>{{ $detail->content }}</span>
+                                                    @endif
                                                 @else
                                                 @if(!empty($detail->reply))
                                                 <p class="reply-content" data-id="{{ $detail->reply->id }}"><i class="fa fa-reply"></i>{{ Str::limit($detail->reply->content, 35, '...') }} </p>
@@ -101,7 +131,36 @@
                                         @endforeach
                                         @endif
                                     </div>
+                                    
+                                    <div class="record-block">
+                                        <div class="record-pause" id="stopButton">
+                                            <i class="ti-control-pause"></i>
+                                        </div>
+                                        <div class="record-sound">
+                                            <img src="{{ asset('sound.gif') }}"/>
+                                        </div>
+                                        <div class="record-timer" id="recordingTime">
+                                            00:00
+                                        </div>
+                                        <div class="result-record">
+                                            <ol id="recordingsList"></ol>
+                                            <div class="record-button">
+                                                <div class="cancel-record">
+                                                    Hủy
+                                                    <i class="zmdi zmdi-delete"></i>
+                                                </div>
+                                                <div class="send-record">
+                                                    Gửi
+                                                    <i class="zmdi zmdi-mail-send"></i>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
                                     <div class="user-comment-box">
+                                        <div class="cmt-message-record" id="recordButton">
+                                            <i class="ti-microphone"></i>
+                                        </div>
                                         <div class="cmt-message-copy" onclick="globalScripts.copy_to_clipboard('userCommentDetails')">
                                             <i class="zmdi zmdi-copy"></i>
                                         </div>
@@ -432,12 +491,15 @@
         $(document).on("contextmenu", ".user-comment-item", function(e) {
             e.preventDefault();
             let reply_comment_id = $(this).attr("data-id");
-            var content = $(this).find(".comment-detail > span").html();
+            var content = $(this).find(".comment-detail > span");//
+            content.find('a').css("color", "black");
+            content = content.html();
             $(".friend-message").html(content);
             $('.chat-box').css("display", "block");
             $("#inputUserComment").focus();
             $('#sendUserComment').attr('data-reply_comment', reply_comment_id);
             $('#sendUserComment').attr('data-reply_comment_content', content);
+            $(".friend-message > a").css("color", "black !important");
         });
 
         $(".close-reply").on("click", function() {
@@ -461,7 +523,124 @@
                 );
             }
         });
+
+        var record_block = $(".record-block").html();
+        // record
+        $(".cmt-message-record").on("click", function(){
+            $(".user-comment-box").css("display", "none");
+            $(".record-block").css("display", "flex");
+        });
+
+        $(document).on("click", ".record-pause", function() {
+            $(".record-pause").hide();
+            $(".record-sound").css("display", "none");
+            $(".result-record").css("display", "flex");
+        })
+
+        $(document).on("click", ".cancel-record", function() {
+            $(".user-comment-box").css("display", "flex");
+            $("#recordingsList").css("display", "none");
+            $(".record-block").html(record_block);
+            $(".record-block").css("display", "none");
+            
+        });
+
+        $(document).on("click", ".send-record", function() {
+            $(".user-comment-box").css("display", "flex");
+            
+
+            //send
+            
+            var audioElement = $("#recordingsList audio");
+            var audioSrc = audioElement.attr('src');
+
+            var _token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+            let lesson_id = $("#sendUserComment").attr('data-lesson');
+            let comment_id = $("#sendUserComment").attr('data-comment');
+            let reply_id = $("#sendUserComment").attr('data-reply');
+
+            var formData = new FormData();
+            formData.append('comment', comment_id);
+            formData.append('lesson', lesson_id);
+            formData.append('reply_id', reply_id);
+            formData.append('_token', _token);
+
+            fetch(audioSrc)
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch audio');
+                    }
+                    return response.blob();
+                })
+                .then(function (blob) {
+                    
+
+                    formData.append('file', blob, 'audio.mp3');
+                    // Now that the FormData is properly populated, make the AJAX request
+                    $.ajax({
+                        url: "/ajax/dropzone/store",
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        dataType: 'json',
+                        success: function (response) {
+                            console.log('Upload successful:', response);
+                            // You can handle the response here
+                        },
+                        error: function (error) {
+                            console.error('Error uploading audio:', error);
+                        }
+                    });
+                })
+                .catch(function (error) {
+                    console.error('Error fetching audio:', error);
+                });
+
+                
+        });
+
+
+        async function uploadAudio() {
+    try {
+        var _token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+
+            let lesson_id = $(this).attr('data-lesson');
+            let comment_id = $(this).attr('data-comment');
+            let reply_id = $(this).attr('data-reply');
+
+        var audioElement = $("#recordingsList audio");
+        var audioSrc = audioElement.attr('src');
         
+        const response = await fetch(audioSrc);
+        if (!response.ok) {
+            throw new Error('Failed to fetch audio');
+        }
+        
+        var formData = new FormData();
+        formData.append('comment', comment_id);
+        formData.append('lesson', lesson_id);
+        formData.append('reply_id', reply_id);
+        formData.append('_token', _token);
+        
+        const blob = await response.blob();
+        formData.append('file', blob, 'audio.mp3');
+        
+        // Now that the FormData is properly populated, make the AJAX request
+        const uploadResponse = await $.ajax({
+            url: "/ajax/dropzone/store",
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+        });
+        
+        console.log('Upload successful:', uploadResponse);
+        // You can handle the response here
+    } catch (error) {
+        console.error('Error uploading audio:', error);
+    }
+}
+
 
     });
 </script>
@@ -473,7 +652,7 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         jQuery('body').bind('cut paste', function(e) {
-            e.preventDefault();
+            // e.preventDefault();
         });
         jQuery("body").on("contextmenu", function(e) {
             // return false;
@@ -481,38 +660,40 @@
     });
     jQuery(document).keydown(function(event) {
         if (event.keyCode == 123) {
-            return false;
+            // return false;
         }
         if (event.ctrlKey && event.shiftKey && event.keyCode == 67) {
-            return false;
+            // return false;
         }
         if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {
-            return false;
+            // return false;
         }
     });
     document.onkeydown = function(e) {
         if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 117)) {
-            return false;
+            // return false;
         } else {
             return true;
         }
     };
     jQuery(document).keypress("u", function(e) {
         if (e.ctrlKey) {
-            return false;
+            // return false;
         } else {
             return true;
         }
     });
     document.body.addEventListener('keydown', event => {
         if (event.ctrlKey && 'spa'.indexOf(event.key) !== -1) {
-            event.preventDefault()
+            // event.preventDefault()
         }
     })
-
+    
 </script>
 
-<script src="{{ asset('js/socket.js') }}"></script>
+{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
+<script src="{{ asset('js/record_init.js') }}"></script>
+<script src="{{ asset('js/record.js') }}"></script>
 
 @endpush
 
@@ -551,6 +732,9 @@
         color: #081c36;
     }
 
+    .friend-message > a{
+        white-space: normal;
+    }
     .friend-message .message {
         background-color: #f2f2f2;
         padding: 10px 15px;
@@ -590,7 +774,110 @@
         cursor: pointer;
         color: white;
     }
+    .preview-image {
+        width: 100px;
+        height: 100px;
+    }
 
+    .preview-image img {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* m3u8 */
+    .video-js.vjs-default-skin {
+        width: 100%;
+        height: 150px;
+    }
+
+    .vjs-volume-panel.vjs-control.vjs-volume-panel-horizontal, button.vjs-picture-in-picture-control.vjs-control.vjs-button, .vjs-progress-control.vjs-control {
+        display: none;
+
+    }
+
+    ::selection {
+        background: #0074D9 !important; /* Màu nền khi bạn chọn văn bản */
+        color: #fff; /* Màu văn bản khi bạn chọn văn bản */
+    }
+
+    .comment-detail {
+        font-size: 16px;
+    }
+
+    .cmt-message-record {
+        color: #007bff;
+        text-align: center;
+        min-width: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        display: none;
+    }
+    .cmt-message-record > i {
+        font-size: 22px;
+    }
+
+    .record-block {
+        color: black;
+        display: none;
+        align-items: center;
+        margin-left: 10px;
+        margin-bottom: 20px;
+    }
+
+    .record-sound {
+        width: 200px;
+    }
+
+    .record-sound img {
+        width: 100%;
+    }
+    .record-pause i {
+        font-size: 25px;
+    }
+    .record-pause {
+        cursor: pointer;
+    }
+    .result-record {
+        display: none;
+        flex-direction: column;
+    }
+
+    .cancel-record i {
+        color: red;
+    }
+
+    .cancel-record {
+        background: beige;
+        padding: 0px 5px;
+        border-radius: 10px;
+        border: 1px solid;
+        cursor: pointer;
+    }
+
+    .send-record {
+        background: #007bff;
+        color: white;
+        border: 1px solid grey;
+        border-radius: 10px;
+        padding: 0px 5px;
+        cursor: pointer;
+    }
+
+    ol#recordingsList {
+        width: 50%;
+        list-style-type: none;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .record-button {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    
 </style>
 @endpush
 @endsection

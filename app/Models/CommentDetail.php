@@ -9,7 +9,11 @@ class CommentDetail extends Model {
 
     protected $table = 'comment_detail';
 
+    public $timestamps = false;
+
     use HasFactory;
+
+    protected $guarded = [];
 
     public function reply()
     {

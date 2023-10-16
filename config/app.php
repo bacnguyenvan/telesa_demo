@@ -176,7 +176,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
     ],
 
     /*
@@ -230,6 +230,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Helper' => \App\Http\Controllers\HelperController::class,
+        'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class
     ],
 
 ];
