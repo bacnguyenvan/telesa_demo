@@ -102,13 +102,16 @@
                                                     </div>
                                                     <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
                                                     @else
+                                                        @if($detail->type == 3)
                                                         <video loading="lazy" width="100%" height=" @if($detail->type == 4)200px @else 50px @endif" controls>
                                                             <source src="{{ $detail->path }}" type="video/mp4">
                                                             Trình duyệt của bạn không hỗ trợ video HTML5.
                                                         </video>
-                                                        {{-- <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{}'>
+                                                        @else
+                                                        <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{}'>
                                                             <source src="{{ $detail->path }}" type="application/x-mpegURL">
-                                                        </video> --}}
+                                                        </video>
+                                                        @endif
                                                         <span>{{ $detail->content }}</span>
                                                     @endif
                                                 @else
@@ -809,6 +812,8 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+
+        display: none;
     }
     .cmt-message-record > i {
         font-size: 22px;
