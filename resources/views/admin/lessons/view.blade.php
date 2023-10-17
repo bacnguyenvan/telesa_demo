@@ -145,7 +145,7 @@
                                         <div class="result-record">
                                             <ol id="recordingsList"></ol>
                                             <div class="record-button">
-                                                <div class="cancel-record">
+                                                <div class="cancel-record" id="cancel-record">
                                                     Hủy
                                                     <i class="zmdi zmdi-delete"></i>
                                                 </div>
@@ -524,7 +524,6 @@
             }
         });
 
-        var record_block = $(".record-block").html();
         // record
         $(".cmt-message-record").on("click", function(){
             $(".user-comment-box").css("display", "none");
@@ -537,20 +536,9 @@
             $(".result-record").css("display", "flex");
         })
 
-        $(document).on("click", ".cancel-record", function() {
-            $(".user-comment-box").css("display", "flex");
-            $("#recordingsList").css("display", "none");
-            $(".record-block").html(record_block);
-            $(".record-block").css("display", "none");
-            
-        });
-
         $(document).on("click", ".send-record", function() {
-            $(".user-comment-box").css("display", "flex");
             
-
             //send
-            
             var audioElement = $("#recordingsList audio");
             var audioSrc = audioElement.attr('src');
 
@@ -573,9 +561,8 @@
                     return response.blob();
                 })
                 .then(function (blob) {
-                    
-
                     formData.append('file', blob, 'audio.mp3');
+                    $(".record-block").html('<div class="uploading-block"><img src="/upload-anim.gif"></div>');
                     // Now that the FormData is properly populated, make the AJAX request
                     $.ajax({
                         url: "/ajax/dropzone/store",
@@ -587,6 +574,10 @@
                         success: function (response) {
                             console.log('Upload successful:', response);
                             // You can handle the response here
+                            globalScripts.insert_new_file('audio.mp3', response.path, preview = '', response.time, response.detail_id);
+                            $(".user-comment-box").css("display", "flex");
+                            $(".result-record").css("display", "none");
+                            $(".record-block").html('');
                         },
                         error: function (error) {
                             console.error('Error uploading audio:', error);
@@ -596,51 +587,8 @@
                 .catch(function (error) {
                     console.error('Error fetching audio:', error);
                 });
-
                 
         });
-
-
-        async function uploadAudio() {
-    try {
-        var _token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-
-            let lesson_id = $(this).attr('data-lesson');
-            let comment_id = $(this).attr('data-comment');
-            let reply_id = $(this).attr('data-reply');
-
-        var audioElement = $("#recordingsList audio");
-        var audioSrc = audioElement.attr('src');
-        
-        const response = await fetch(audioSrc);
-        if (!response.ok) {
-            throw new Error('Failed to fetch audio');
-        }
-        
-        var formData = new FormData();
-        formData.append('comment', comment_id);
-        formData.append('lesson', lesson_id);
-        formData.append('reply_id', reply_id);
-        formData.append('_token', _token);
-        
-        const blob = await response.blob();
-        formData.append('file', blob, 'audio.mp3');
-        
-        // Now that the FormData is properly populated, make the AJAX request
-        const uploadResponse = await $.ajax({
-            url: "/ajax/dropzone/store",
-            type: 'POST',
-            data: formData,
-            dataType: 'json',
-        });
-        
-        console.log('Upload successful:', uploadResponse);
-        // You can handle the response here
-    } catch (error) {
-        console.error('Error uploading audio:', error);
-    }
-}
-
 
     });
 </script>
@@ -691,7 +639,7 @@
     
 </script>
 
-<script src="{{ asset('js/socket.js') }}"></script>
+{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 
@@ -813,7 +761,7 @@
         align-items: center;
         cursor: pointer;
 
-        display: none;
+        /* display: none; */
     }
     .cmt-message-record > i {
         font-size: 22px;
@@ -878,6 +826,16 @@
         justify-content: space-evenly;
     }
     
+    .uploading-block {
+        width: 50%;
+        margin: auto;
+    }
+
+    .uploading-block img {
+        width: 100%;
+        height: 100%;
+    }
+
 </style>
 @endpush
 @endsection

@@ -12,18 +12,18 @@ var audioContext //audio context to help us record
 var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
 var pauseButton = document.getElementById("pauseButton");
-
+var cancelButton = document.getElementById("cancel-record");
 //add events to those 2 buttons
 recordButton.addEventListener("click", startRecording);
 stopButton.addEventListener("click", stopRecording);
 // pauseButton.addEventListener("click", pauseRecording);
+cancelButton.addEventListener("click", cancelRecording);
 
 const recordingTime = document.getElementById('recordingTime');
 const recordingsList = document.getElementById('recordingsList');
 
 function startRecording() {
 	console.log("recordButton clicked");
-
 	/*
 		Simple constraints object, for more advanced audio features see
 		https://addpipe.com/blog/audio-constraints-getusermedia/
@@ -130,6 +130,11 @@ function stopRecording() {
 	$(".record-sound").css("display", "none");
 	$(".result-record").css("display", "flex");
 	$(".record-timer").css("display", "none");
+}
+
+function cancelRecording(){
+	stopRecording();
+	location.reload();
 }
 
 function createDownloadLink(blob) {
