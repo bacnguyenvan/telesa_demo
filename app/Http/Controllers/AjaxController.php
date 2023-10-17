@@ -73,7 +73,7 @@ class AjaxController extends Controller {
 
         } else {
             if ($request->file('file')) {
-                set_time_limit(300);
+                set_time_limit(500);
 
                 $file = $request->file('file');
                 $original_filename = $file->getClientOriginalName();
@@ -102,7 +102,7 @@ class AjaxController extends Controller {
                 $destinationPath = 'chat/' . $env . "/" . $comment_id;
 
                 $disk = Storage::disk('s3');
-                $dir = $destinationPath . '/ '. $filename ;
+                $dir = $destinationPath . '/'. $filename ;
                 $disk->put($dir, file_get_contents($file), 'public');
                 $path = $disk->url($dir);
                 $fileConvert = $filename;

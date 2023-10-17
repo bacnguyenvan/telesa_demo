@@ -108,7 +108,7 @@
                                                             Trình duyệt của bạn không hỗ trợ video HTML5.
                                                         </video>
                                                         @else
-                                                        <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{}'>
+                                                        <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'>
                                                             <source src="{{ $detail->path }}" type="application/x-mpegURL">
                                                         </video>
                                                         @endif
@@ -639,7 +639,7 @@
     
 </script>
 
-{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
+<script src="{{ asset('js/socket.js') }}"></script>
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 
@@ -740,7 +740,6 @@
 
     .vjs-volume-panel.vjs-control.vjs-volume-panel-horizontal, button.vjs-picture-in-picture-control.vjs-control.vjs-button, .vjs-progress-control.vjs-control {
         display: none;
-
     }
 
     ::selection {
@@ -761,7 +760,7 @@
         align-items: center;
         cursor: pointer;
 
-        /* display: none; */
+        display: none;
     }
     .cmt-message-record > i {
         font-size: 22px;
