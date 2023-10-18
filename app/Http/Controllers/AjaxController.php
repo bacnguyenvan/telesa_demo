@@ -124,7 +124,7 @@ class AjaxController extends Controller {
                     $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
                     $dirConvert = $destinationPath . '/' . $fileConvert;
                     // $this->convertFile($dirConvert, $dir, $cd_id, $fileConvert);
-                    dispatch(new SendFileJob($dirConvert, $dir, $cd_id, $fileConvert));
+                    dispatch(new SendFileJob($dirConvert, $dir, $cd_id, $fileConvert))->onQueue("low");
                 }
 
                 // insert new comment - type upload file
