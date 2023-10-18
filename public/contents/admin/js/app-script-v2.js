@@ -201,8 +201,8 @@ globalScripts = {
                 '<source src="' + filepath + '" type="video/mp4">' +
             '</video>';
         } else if(file_type == "4") {
-            html += '<video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup="{}">' +
-                '<source src="' + filepath + '" type="application/x-mpegURL">' +
+            html += '<video loop=1 muted=1 autoplay=false width="100%" height="150px" controls>' +
+                '<source src="' + filepath + '" type="video/mp4">' +
             '</video>';
         } else {
         }

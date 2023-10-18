@@ -3245,7 +3245,8 @@ table.grid td {
 	display: flex;
 	padding-left: 0;
 	list-style: none;
-	border-radius: .25rem
+	border-radius: .25rem;
+    flex-wrap: wrap;
 }
 .page-link {
 	position: relative;

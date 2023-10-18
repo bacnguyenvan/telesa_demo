@@ -108,9 +108,12 @@
                                                             Trình duyệt của bạn không hỗ trợ video HTML5.
                                                         </video>
                                                         @else
-                                                        <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'>
-                                                            <source src="{{ $detail->path }}" type="application/x-mpegURL">
+                                                        <video loop=1 muted=1 autoplay=false width="100%" height="150px" controls>
+                                                            <data-src src="{{ $detail->path }}" type="video/mp4"></data-src>
                                                         </video>
+                                                        <!-- <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'>
+                                                            <source src="{{ $detail->path }}" type="video/mp4">
+                                                        </video> -->
                                                         @endif
                                                         <span>{{ $detail->content }}</span>
                                                     @endif
@@ -637,6 +640,46 @@
         }
     })
     
+    function isElementInViewport (el) 
+    {
+        var rect = el.getBoundingClientRect();
+
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && 
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+    const handler = () => 
+    {
+        const videos = document.querySelectorAll('video');
+        for (let i = 0; i < videos.length; i++)
+        {
+            const video = videos[i];
+            const visible = isElementInViewport(video); // Check if the video is in the viewport or not.
+            if (visible)
+            {
+                const dataSrc = video.querySelector('data-src');
+                if (dataSrc) // Check if data-src exists or not. If yes, than we have never loaded this video.
+                {
+                    // Creating souce element and adding respective attributes.
+                    const source = document.createElement('source');
+                    source.src = dataSrc.getAttribute('src');
+                    source.type = dataSrc.getAttribute('type');
+
+                    video.appendChild(source); // Add new source element to video.
+                    video.removeChild(dataSrc); // Remove data-src from video. 
+                }
+            }
+        } 
+    }
+
+    const user_comment_detail = document.getElementById('userCommentDetails');
+
+    addEventListener('load', handler, false);
+    user_comment_detail.addEventListener('scroll', handler, false);
+    addEventListener('resize', handler, false);
 </script>
 
 <script src="{{ asset('js/socket.js') }}"></script>
