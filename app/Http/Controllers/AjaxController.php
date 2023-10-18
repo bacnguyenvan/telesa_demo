@@ -17,6 +17,7 @@ use App\Events\RemoveMessage;
 use Illuminate\Support\Facades\Storage;
 use FFMpeg;
 use FFMpeg\Format\Video\X264;
+use App\Jobs\SendFileJob;
 
 class AjaxController extends Controller {
     /**
@@ -77,7 +78,7 @@ class AjaxController extends Controller {
 
                 $file = $request->file('file');
                 $original_filename = $file->getClientOriginalName();
-                $strRand = generate_random_string(20);
+                
                 $file_type = '';
                 $ext = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
                 if (in_array($ext, array('pdf', 'doc', 'docx', 'xls', 'xlsx'))) {
@@ -90,42 +91,25 @@ class AjaxController extends Controller {
                     $file_type = 5;
                 }
 
-                $filename = $strRand . '-' . $original_filename;
-
                 $lesson_id = $request->get('lesson');
                 $comment_id = $request->get('comment');
                 $replyId = $request->get('reply_id');
                 
                 // File upload location
                 // $location = 'uploads/comments/' . $comment_id;
+                
+                $strRand = generate_random_string(20);
+
+                $filename = $strRand . '-' . $original_filename;
                 $env = config("app.env");
                 $destinationPath = 'chat/' . $env . "/" . $comment_id;
-
+                        
                 $disk = Storage::disk('s3');
                 $dir = $destinationPath . '/'. $filename ;
                 $disk->put($dir, file_get_contents($file), 'public');
                 $path = $disk->url($dir);
                 $fileConvert = $filename;
 
-                // convert
-
-                if($file_type == "4") {
-                    $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
-                    $dirConvert = $destinationPath . '/' . $fileConvert;
-                
-                    FFMpeg::fromDisk('s3')->open($dir)
-                        ->export()
-                        ->toDisk('s3')
-                        ->inFormat(new X264)
-                        ->save("$dirConvert", 'public');
-
-                    $path = $disk->url($dirConvert);
-                    $disk->delete($dir);
-                }
-                
-
-                // insert new comment - type upload file
-                // add comment detail
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $userId,
                     'reply_id' => $replyId,
@@ -135,6 +119,17 @@ class AjaxController extends Controller {
                     'type' => $file_type,
                     'created_time' => Date('Y-m-d H:i:s')
                 ]);
+
+                if($file_type == "4") {
+                    $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
+                    $dirConvert = $destinationPath . '/' . $fileConvert;
+                    // $this->convertFile($dirConvert, $dir, $cd_id, $fileConvert);
+                    dispatch(new SendFileJob($dirConvert, $dir, $cd_id, $fileConvert));
+                }
+
+                // insert new comment - type upload file
+                // add comment detail
+                
 
                 // update comment: updated_time
                 $updated_time = \Carbon\Carbon::createFromFormat('m d Y H:i A', date('m d Y H:iA'));
@@ -169,7 +164,7 @@ class AjaxController extends Controller {
                     'message' => ''
                 ];
 
-                event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
+                 event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
 
             } else {
                 // Response
@@ -184,6 +179,26 @@ class AjaxController extends Controller {
         }
 
         return response()->json($data);
+    }
+
+    public function convertFile($dirConvert, $dir, $cd_id, $fileConvert)
+    {
+        $disk = Storage::disk('s3');
+
+        // convert
+        FFMpeg::fromDisk('s3')->open($dir)
+            ->export()
+            ->toDisk('s3')
+            ->inFormat(new X264)
+            ->save("$dirConvert", 'public');
+
+        $path = $disk->url($dirConvert);
+        $disk->delete($dir);
+        
+        CommentDetail::find($cd_id)->update([
+            'path' => $path,
+            'content' => $fileConvert
+        ]);
     }
 
     public function remove_file_uploaded(Request $request) {
