@@ -10,9 +10,6 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/min/dropzone.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.js"></script>
 
-<link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">
-<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
-
 
 <div class="content-wrapper @if(Auth::user()->role_id == 2) teacher-view-lesson @endif">
     <div class="container-fluid">
@@ -161,15 +158,18 @@
                                         </div>
                                     </div>
                                     <div class="user-comment-box">
-                                        <div class="cmt-message-record" id="recordButton">
-                                            <i class="ti-microphone"></i>
+                                        <div class="cmt-feature">
+                                            <div class="cmt-message-sticker">
+                                                <img src="{{asset('sticker.png')}}"/>
+                                            </div>
+                                            <div class="cmt-message-file">
+                                                <i class="zmdi zmdi-attachment-alt"></i>
+                                            </div>
+                                            <div class="cmt-message-record" id="recordButton">
+                                                <i class="ti-microphone"></i>
+                                            </div>
                                         </div>
-                                        <div class="cmt-message-copy" onclick="globalScripts.copy_to_clipboard('userCommentDetails')">
-                                            <i class="zmdi zmdi-copy"></i>
-                                        </div>
-                                        <div class="cmt-message-file">
-                                            <i class="zmdi zmdi-attachment-alt"></i>
-                                        </div>
+                                        
                                         <div class="cmt-message-box">
                                             <div class="chat-box">
                                                 <div><i class="fa fa-reply"></i> Trả lời</div>
@@ -353,6 +353,7 @@
     });
 
     $(function() {
+        
         $('#userCommentDetails').on('mouseover click press hover', '.user-comment-item', function() {
             $(this).find('.btn-delcmt').show().removeClass('hide');
         }).on('mouseleave blur', '.user-comment-item', function() {
@@ -533,11 +534,11 @@
             $(".record-block").css("display", "flex");
         });
 
-        $(document).on("click", ".record-pause", function() {
-            $(".record-pause").hide();
-            $(".record-sound").css("display", "none");
-            $(".result-record").css("display", "flex");
-        })
+        // $(document).on("click", ".record-pause", function() {
+        //     $(".record-pause").hide();
+        //     $(".record-sound").css("display", "none");
+        //     $(".result-record").css("display", "flex");
+        // })
 
         $(document).on("click", ".send-record", function() {
             
@@ -580,7 +581,7 @@
                             globalScripts.insert_new_file('audio.mp3', response.path, preview = '', response.time, response.detail_id);
                             $(".user-comment-box").css("display", "flex");
                             $(".result-record").css("display", "none");
-                            $(".record-block").html('');
+                            $(".record-block").css("display", "none");
                         },
                         error: function (error) {
                             console.error('Error uploading audio:', error);
@@ -790,19 +791,21 @@
         color: #fff; /* Màu văn bản khi bạn chọn văn bản */
     }
 
-    .comment-detail {
-        font-size: 16px;
+    .comment-detail span, .comment-detail p{
+        white-space: pre-wrap;
     }
 
     .cmt-message-record {
         color: #007bff;
         text-align: center;
-        min-width: 30px;
-        display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
 
+        /* display: none; */
+    }
+
+    .cmt-message-sticker {
         display: none;
     }
     .cmt-message-record > i {
@@ -877,6 +880,32 @@
         width: 100%;
         height: 100%;
     }
+
+    .cmt-message-sticker {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+    }
+
+    .cmt-message-sticker img {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .user-comment-box {
+        align-items: center;
+    }
+
+    .user-comment-box .cmt-message-file i.zmdi {
+        margin: 0px auto 0 !important;
+    }
+
+    .cmt-feature {
+        display: flex;
+        margin-right: 5px;
+        margin-left: -5px;
+    }
+
 
 </style>
 @endpush
