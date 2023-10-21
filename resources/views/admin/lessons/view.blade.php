@@ -353,6 +353,7 @@
     });
 
     $(function() {
+        
         $('#userCommentDetails').on('mouseover click press hover', '.user-comment-item', function() {
             $(this).find('.btn-delcmt').show().removeClass('hide');
         }).on('mouseleave blur', '.user-comment-item', function() {
@@ -533,11 +534,11 @@
             $(".record-block").css("display", "flex");
         });
 
-        $(document).on("click", ".record-pause", function() {
-            $(".record-pause").hide();
-            $(".record-sound").css("display", "none");
-            $(".result-record").css("display", "flex");
-        })
+        // $(document).on("click", ".record-pause", function() {
+        //     $(".record-pause").hide();
+        //     $(".record-sound").css("display", "none");
+        //     $(".result-record").css("display", "flex");
+        // })
 
         $(document).on("click", ".send-record", function() {
             
@@ -580,7 +581,7 @@
                             globalScripts.insert_new_file('audio.mp3', response.path, preview = '', response.time, response.detail_id);
                             $(".user-comment-box").css("display", "flex");
                             $(".result-record").css("display", "none");
-                            $(".record-block").html('');
+                            $(".record-block").css("display", "none");
                         },
                         error: function (error) {
                             console.error('Error uploading audio:', error);
@@ -682,7 +683,7 @@
     addEventListener('resize', handler, false);
 </script>
 
-{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
+<script src="{{ asset('js/socket.js') }}"></script>
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 
@@ -790,8 +791,8 @@
         color: #fff; /* Màu văn bản khi bạn chọn văn bản */
     }
 
-    .comment-detail {
-        font-size: 16px;
+    .comment-detail span, .comment-detail p{
+        white-space: pre-wrap;
     }
 
     .cmt-message-record {
@@ -904,6 +905,8 @@
         margin-right: 5px;
         margin-left: -5px;
     }
+
+
 </style>
 @endpush
 @endsection
