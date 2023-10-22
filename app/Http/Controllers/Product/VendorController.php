@@ -169,8 +169,10 @@ class VendorController extends Controller
         }
            
         $fileInComment = $fileInComment  ->get();
+
+        $emojis = $this->getEmojiList();
         
-        return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id'));
+        return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id', 'emojis'));
     }
 
     public function index_course($id)
@@ -406,5 +408,40 @@ class VendorController extends Controller
 
 
         return Redirect::back();
+    }
+
+    public function getEmojiList()
+    {
+        return Array
+        (
+            "😀",
+            "😄",
+            "😅",
+            "😆",
+            "😇",
+            "🤣",
+            "😂",
+            "😂",
+            "😃",
+            "😄",
+            "😅",
+            "🤠",
+            "😍",
+            "🤩",
+            "😐",
+            "😔",
+            "😗",
+            "😘",
+            "😙",
+            "🤙",
+            "🤡",
+            "🤠",
+            "😸",
+            "😂",
+            "😜",
+            "🤥",
+            "😤",
+            "😊"
+        );        
     }
 }

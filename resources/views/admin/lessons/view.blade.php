@@ -161,6 +161,7 @@
                                         <div class="cmt-feature">
                                             <div class="cmt-message-sticker">
                                                 <img src="{{asset('sticker.png')}}"/>
+                                                @include('admin.lessons.sticker-popup', ['emojis' => $emojis])
                                             </div>
                                             <div class="cmt-message-file">
                                                 <i class="zmdi zmdi-attachment-alt"></i>
@@ -683,9 +684,10 @@
     addEventListener('resize', handler, false);
 </script>
 
-<script src="{{ asset('js/socket.js') }}"></script>
+{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
+<script src="{{ asset('js/sticker.js') }}"></script>
 
 @endpush
 
@@ -806,7 +808,7 @@
     }
 
     .cmt-message-sticker {
-        display: none;
+        /* display: none; */
     }
     .cmt-message-record > i {
         font-size: 22px;
@@ -903,10 +905,11 @@
     .cmt-feature {
         display: flex;
         margin-right: 5px;
-        margin-left: -5px;
     }
 
 
 </style>
+
+<link href="{{ asset('css/sticker.css') }}" rel="stylesheet" />
 @endpush
 @endsection
