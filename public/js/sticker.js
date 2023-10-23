@@ -50,7 +50,7 @@ window.addEventListener('load', function () {
     allTabs = tabsBox.querySelectorAll('.modal-slide-item'),
     arrowIcons = document.querySelectorAll('#stickerContent .slide-nav'),
     tabsBoxEmoji = document.querySelector('#emojiContent .modal-slide-list'),
-    allTabsEmoji = tabsBoxEmoji.querySelectorAll('.modal-slide-item'),
+    // allTabsEmoji = tabsBoxEmoji.querySelectorAll('.modal-slide-item'),
     arrowIconsEmoji = document.querySelectorAll('#emojiContent .slide-nav');
 
   let isDragging = false;
@@ -86,6 +86,7 @@ window.addEventListener('load', function () {
 
   allTabs.forEach(tab => {
     tab.addEventListener('click', () => {
+      console.log('tewst');
       tabsBox.querySelector('.active').classList.remove('active');
       tab.classList.add('active');
       let idSticker = tab.dataset.sticker;
