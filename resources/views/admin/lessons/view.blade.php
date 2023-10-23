@@ -351,12 +351,13 @@
 @push('cjschat')
 @if(($cur_comment_id && $cur_comment_id > 0) || Auth::user()->role_id > 3 )
 <script type="text/javascript">
+    var iconEmojis = '';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
+    
     $(function() {
         
         $('#userCommentDetails').on('mouseover click press hover', '.user-comment-item', function() {
@@ -429,6 +430,8 @@
                             $('.chat-box').css("display", "none");
                             $('#sendUserComment').attr('data-reply_comment_content', "");
                             $('#sendUserComment').attr('data-reply_comment', "");
+
+                            if ($('.sticker-modal').hasClass('active')) $('.sticker-modal').removeClass('active');
                         }
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
@@ -438,6 +441,58 @@
                 })
                 $('#inputUserComment').val('');
             }
+        });
+
+        $(".modal-emoji-item").on("click", function() {
+            iconEmojis += $(this).find('span').html();
+            $('#inputUserComment').val(iconEmojis);
+        })
+
+        $(".modal-icon-item").on("mouseenter", function() {
+            $(this).css("background", "#8080802e");
+        }).on( "mouseleave", function() {
+            $(this).css("background", "white");
+        });
+
+        $(".modal-icon-item").on("click", function() {
+            var src = $(this).find('img').attr('src');
+
+            var _token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+            let lesson_id = $("#sendUserComment").attr('data-lesson');
+            let comment_id = $("#sendUserComment").attr('data-comment');
+            let reply_id = $("#sendUserComment").attr('data-reply');
+
+            var formData = new FormData();
+            formData.append('comment', comment_id);
+            formData.append('lesson', lesson_id);
+            formData.append('reply_id', reply_id);
+            formData.append('type_sticker', true);
+            formData.append('path', src);
+            formData.append('_token', _token);
+            
+            $.ajax({
+                url: "/ajax/dropzone/store",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (response) {
+                    console.log('send sticker successful:', response);
+                    // You can handle the response here
+                    globalScripts.insert_new_file('', response.path, src, response.time, response.detail_id);
+                    $('.sticker-modal').removeClass('active');
+                },
+                error: function (error) {
+                    console.error('Error send sticker:', error);
+                }
+            });
+        });
+
+        $(".gif-img").on("mouseenter", function() {
+            $(this).css("border", "1px solid grey");
+        }).on( "mouseleave", function() {
+            $(this).css("border", "none");
         });
 
         // Upload file
@@ -910,7 +965,7 @@
         display: flex;
         margin-right: 5px;
     }
-
+    
 
 </style>
 

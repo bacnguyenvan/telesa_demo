@@ -49,8 +49,7 @@ window.addEventListener('load', function () {
   const tabsBox = document.querySelector('#stickerContent .modal-slide-list'),
     allTabs = tabsBox.querySelectorAll('.modal-slide-item'),
     arrowIcons = document.querySelectorAll('#stickerContent .slide-nav'),
-    tabsBoxEmoji = document.querySelector('#emojiContent .modal-slide-list'),
-    // allTabsEmoji = tabsBoxEmoji.querySelectorAll('.modal-slide-item'),
+    // tabsBoxEmoji = document.querySelector('#emojiContent .modal-slide-list'),
     arrowIconsEmoji = document.querySelectorAll('#emojiContent .slide-nav');
 
   let isDragging = false;
@@ -59,14 +58,14 @@ window.addEventListener('load', function () {
     let maxScrollableWidth;
     if (document.querySelector('#stickerContent').classList.contains('active')) {
       maxScrollableWidth = tabsBox.scrollWidth - tabsBox.clientWidth;
-      arrowIcons[0].style.display = scrollVal <= 0 ? 'none' : 'flex';
-      arrowIcons[1].style.display =
-        maxScrollableWidth - scrollVal <= 1 ? 'none' : 'flex';
+      // arrowIcons[0].style.display = scrollVal <= 0 ? 'none' : 'flex';
+      // arrowIcons[1].style.display =
+      //   maxScrollableWidth - scrollVal <= 1 ? 'none' : 'flex';
     } else {
-      maxScrollableWidth = tabsBoxEmoji.scrollWidth - tabsBoxEmoji.clientWidth;
+      // maxScrollableWidth = tabsBoxEmoji.scrollWidth - tabsBoxEmoji.clientWidth;
       arrowIconsEmoji[0].style.display = scrollVal <= 0 ? 'none' : 'flex';
-      arrowIconsEmoji[1].style.display =
-        maxScrollableWidth - scrollVal <= 1 ? 'none' : 'flex';
+      // arrowIconsEmoji[1].style.display =
+      //   maxScrollableWidth - scrollVal <= 1 ? 'none' : 'flex';
     }
   }
 
@@ -79,14 +78,13 @@ window.addEventListener('load', function () {
 
   arrowIconsEmoji.forEach(icon => {
     icon.addEventListener('click', () => {
-      let scrollWidth = (tabsBoxEmoji.scrollLeft += icon.id === 'left' ? -44 : 44);
-      handleIcons(scrollWidth);
+      // let scrollWidth = (tabsBoxEmoji.scrollLeft += icon.id === 'left' ? -44 : 44);
+      // handleIcons(scrollWidth);
     })
   });
 
   allTabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      console.log('tewst');
       tabsBox.querySelector('.active').classList.remove('active');
       tab.classList.add('active');
       let idSticker = tab.dataset.sticker;
@@ -97,18 +95,6 @@ window.addEventListener('load', function () {
     })
   });
 
-  allTabsEmoji.forEach(tabEmoji => {
-    tabEmoji.addEventListener('click', () => {
-      tabsBoxEmoji.querySelector('.active').classList.remove('active');
-      tabEmoji.classList.add('active');
-      let idEmoji = tabEmoji.dataset.sticker;
-      document.querySelectorAll('#emojiContent .modal-icon-detai').forEach(function (el) {
-        el.classList.remove('active')
-      });
-      document.querySelector("#emojiContent #" + idEmoji).classList.add("active");
-    })
-  });
-
   const dragging = e => {
     if (!isDragging) return
     if (document.querySelector('#stickerContent').classList.contains('active')) {
@@ -116,22 +102,22 @@ window.addEventListener('load', function () {
       tabsBox.scrollLeft -= e.movementX;
       handleIcons(tabsBox.scrollLeft);
     } else {
-      tabsBoxEmoji.classList.add('dragging');
-      tabsBoxEmoji.scrollLeft -= e.movementX;
-      handleIcons(tabsBoxEmoji.scrollLeft);
+      // tabsBoxEmoji.classList.add('dragging');
+      // tabsBoxEmoji.scrollLeft -= e.movementX;
+      // handleIcons(tabsBoxEmoji.scrollLeft);
     }
   }
 
   const dragStop = () => {
     isDragging = false;
     tabsBox.classList.remove('dragging');
-    tabsBoxEmoji.classList.remove('dragging');
+    // tabsBoxEmoji.classList.remove('dragging');
   }
 
   tabsBox.addEventListener('mousedown', () => (isDragging = true))
   tabsBox.addEventListener('mousemove', dragging)
-  tabsBoxEmoji.addEventListener('mousedown', () => (isDragging = true))
-  tabsBoxEmoji.addEventListener('mousemove', dragging)
+  // tabsBoxEmoji.addEventListener('mousedown', () => (isDragging = true))
+  // tabsBoxEmoji.addEventListener('mousemove', dragging)
   document.addEventListener('mouseup', dragStop)
 
 

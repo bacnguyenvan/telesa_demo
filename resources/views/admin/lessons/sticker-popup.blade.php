@@ -54,9 +54,9 @@
         </div>
         <div class="flex flex-a-c flex-j-sb modal-icon-type">
           <div class="flex flex-a-c h100 modal-slide">
-            <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-prev" id="left">
+            {{-- <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-prev" id="left">
               <span class="arrow arrow-left"></span>
-            </a>
+            </a> --}}
             <ul class="flex flex-a-c h100 modal-slide-list">
               <li class="h100 modal-slide-item active" data-sticker="catSticker">
                 <img src='{{asset("sticker/hinh_tinh/cat/sticker_1.png")}}' alt="">
@@ -68,13 +68,13 @@
                 <img src='{{asset("sticker/hinh_tinh/troc_trang/sticker_1.webp")}}' alt="">
               </li>
             </ul>
-            <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-next" id="right">
+            {{-- <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-next" id="right">
               <span class="arrow arrow-right"></span>
-            </a>
+            </a> --}}
           </div>
-          <div class="flex flex-a-c flex-j-c modal-slide-add">
+          {{-- <div class="flex flex-a-c flex-j-c modal-slide-add">
             <div class="modal-add-icon"></div>
-          </div>
+          </div> --}}
         </div>
       </div>
       <div class="sticker-modal-content w100" id="emojiContent">
@@ -83,7 +83,7 @@
             <p class="modal-icon-name">Feeling</p>
             <ul class="flex flex-wrap modal-icon-list">
               @foreach($emojis as $item)
-              <li class="modal-icon-item">
+              <li class="modal-emoji-item">
                 <span>{{$item}}</span>
               </li>
               @endforeach
@@ -91,7 +91,7 @@
           </div>
           <div class="modal-icon-detai" id="rabbitSticker">
             <p class="modal-icon-name">Rabbit</p>
-            <ul class="flex flex-wrap modal-icon-list">
+            {{-- <ul class="flex flex-wrap modal-icon-list">
               <li class="modal-icon-item">
                 <img src="./Sticker/hinh_tinh/rabbit/rabbit1.webp" alt="">
               </li>
@@ -122,11 +122,11 @@
               <li class="modal-icon-item">
                 <img src="./Sticker/hinh_tinh/rabbit/rabbit10.webp" alt="">
               </li>
-            </ul>
+            </ul> --}}
           </div>
           <div class="modal-icon-detai" id="trocSticker">
             <p class="modal-icon-name">Trọc Trắng</p>
-            <ul class="flex flex-wrap modal-icon-list">
+            {{-- <ul class="flex flex-wrap modal-icon-list">
               <li class="modal-icon-item">
                 <img src="./Sticker/hinh_tinh/troc_trang/chpic.su_-_PeterCxy_001.png" alt="">
               </li>
@@ -160,14 +160,14 @@
               <li class="modal-icon-item">
                 <img src="./Sticker/hinh_tinh/troc_trang/PeterCxy_020.webp" alt="">
               </li>
-            </ul>
+            </ul> --}}
           </div>
         </div>
         <div class="flex flex-a-c flex-j-sb modal-icon-type">
           <div class="flex flex-a-c h100 modal-slide">
-            <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-prev" id="left">
+            {{-- <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-prev" id="left">
               <span class="arrow arrow-left"></span>
-            </a>
+            </a> --}}
             {{-- <ul class="flex flex-a-c h100 modal-slide-list">
               @for($i = 1; $i <= 11; $i++)
               <li class="h100 modal-slide-item active">
@@ -175,9 +175,9 @@
               </li>
               @endfor
             </ul> --}}
-            <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-next" id="right">
+            {{-- <a href="#" class="flex flex-j-c flex-a-c h100 slide-nav slide-next" id="right">
               <span class="arrow arrow-right"></span>
-            </a>
+            </a> --}}
           </div>
         </div>
       </div>
