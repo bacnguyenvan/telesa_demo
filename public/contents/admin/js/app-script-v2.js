@@ -197,9 +197,7 @@ globalScripts = {
         }
 
         if(file_type == "3") {
-            html += '<video loading="lazy" width="100%" height="50px" controls>' +
-                '<source src="' + filepath + '" type="video/mp4">' +
-            '</video>';
+            html += '<audio loading="lazy" style="width: 100%; height: 50px" controls src="' + filepath + '"></audio>';
         } else if(file_type == "4") {
             html += '<video loop=1 muted=1 autoplay=false width="100%" height="150px" controls>' +
                 '<source src="' + filepath + '" type="video/mp4">' +
