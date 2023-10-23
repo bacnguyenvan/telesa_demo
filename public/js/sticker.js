@@ -1,14 +1,14 @@
 window.addEventListener('load', function () {
   // open modal 
-  const openModal = document.querySelector(".cmt-message-sticker");
-  const modal = document.querySelector(".sticker-modal");
-  openModal.addEventListener('click', function () {
-    if (modal.classList.contains('active')) {
-      // modal.classList.remove('active');
-    } else {
-      modal.classList.add('active');
-    }
-  })
+  // const openModal = document.querySelector(".cmt-message-sticker");
+  // const modal = document.querySelector(".sticker-modal");
+  // openModal.addEventListener('click', function () {
+  //   if (modal.classList.contains('active')) {
+  //     modal.classList.remove('active');
+  //   } else {
+  //     modal.classList.add('active');
+  //   }
+  // })
   // swap tab 
   let tabLinks = document.querySelectorAll(".modal-tab-item");
   let tabContent = document.querySelectorAll(".sticker-modal-content");

@@ -443,6 +443,14 @@
             }
         });
 
+        $('.cmt-message-sticker').on("click", function() {
+            $(this).find(".sticker-modal").toggleClass('active');
+        });
+
+        $('.sticker-modal').on("click", function(event) {
+            event.stopPropagation(); // Ngăn chặn sự kiện click lan truyền lên cha
+        });
+
         $(".modal-emoji-item").on("click", function() {
             iconEmojis += $(this).find('span').html();
             $('#inputUserComment').val(iconEmojis);
@@ -454,8 +462,14 @@
             $(this).css("background", "white");
         });
 
-        $(".modal-icon-item").on("click", function() {
-            var src = $(this).find('img').attr('src');
+        $(".modal-icon-item, .gif-img").on("click", function() {
+            var clickedElement = event.target;
+            var src = '';
+            if ($(this).hasClass('modal-icon-item')) {
+                src = $(this).find('img').attr('src');
+            }else {
+                src = $(this).attr('src');
+            }
 
             var _token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
             let lesson_id = $("#sendUserComment").attr('data-lesson');

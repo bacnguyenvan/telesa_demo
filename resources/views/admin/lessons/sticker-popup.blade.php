@@ -192,65 +192,65 @@
           <p class="modal-icon-name">Ami</p>
           <div class="flex flex-row gif-4-col">
             @for($i = 1 ; $i <= 4; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-3-col">
             @for($i = 5 ; $i <= 7; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-2-col">
             @for($i = 8 ; $i <= 9; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/AMI/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <p class="modal-icon-name">Angola rabbit</p>
           <div class="flex flex-row gif-4-col">
             @for($i = 1 ; $i <= 4; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-3-col">
             @for($i = 5 ; $i <= 7; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-3-col">
             @for($i = 8 ; $i <= 10; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/ANGOLA_RABBIT/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <p class="modal-icon-name">Dog</p>
           <div class="flex flex-row gif-4-col">
             @for($i = 1 ; $i <= 4; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-3-col">
             @for($i = 5 ; $i <= 7; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-3-col">
             @for($i = 8 ; $i <= 10; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/DOG/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <p class="modal-icon-name">Mobile girl</p>
           <div class="flex flex-row gif-4-col">
             @for($i = 1 ; $i <= 4; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-3-col">
             @for($i = 5 ; $i <= 7; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
           <div class="flex flex-row gif-2-col">
             @for($i = 8 ; $i <= 9; $i++)
-            <div class="gif-img" style="background-image: url({{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}})"></div>
+            <div class="gif-img" src="{{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}}" style="background-image: url({{asset('/sticker/hinh_gif/MOBILE_GIRL/sticker_' . $i . '.gif')}})"></div>
             @endfor
           </div>
         </div>
