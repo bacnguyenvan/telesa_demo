@@ -767,7 +767,7 @@
     addEventListener('resize', handler, false);
 </script>
 
-{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
+<script src="{{ asset('js/socket.js') }}"></script>
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 <script src="{{ asset('js/sticker.js') }}"></script>
