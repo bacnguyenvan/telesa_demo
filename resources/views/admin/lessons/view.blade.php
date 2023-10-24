@@ -599,6 +599,16 @@
                     },
                     1000 // Adjust the duration of the scroll animation (in milliseconds)
                 );
+
+                $('.user-comment-item').css({
+                    'border' : '1px solid #ccc',
+                    'background' : '#007bff'
+                });
+                // highlight message
+                replyElement.css({
+                    'border' : '2px solid indianred',
+                    'background' : '#007bff94'
+                });
             }
         });
 
