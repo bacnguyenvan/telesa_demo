@@ -169,8 +169,8 @@ globalScripts = {
     insert_new_file: function(filename, filepath, preview, time, detail_id) {
         let data_id = typeof detail_id != "undefined" ? detail_id : filename;
 
-        const lastDotIndex = filename.lastIndexOf('.');
-        var ext = filename.substring(lastDotIndex + 1);
+        const lastDotIndex = filepath.lastIndexOf('.');
+        var ext = filepath.substring(lastDotIndex + 1);
         ext = ext.toLowerCase();
         console.log("ext: ", ext);
         var file_type = '';
@@ -181,7 +181,7 @@ globalScripts = {
             file_type = 3;
         } else if (['mp4', 'mov', 'wmv', 'avi', 'mkv', 'webm'].includes(ext)) {
             file_type = 4;
-        } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+        } else if (['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(ext)) {
             file_type = 5;
         }
 

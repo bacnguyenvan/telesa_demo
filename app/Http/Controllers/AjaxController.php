@@ -56,84 +56,46 @@ class AjaxController extends Controller {
         $data = array();
         $userId = Auth::user()->id;
         $roleId = Auth::user()->role_id;
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,3gp,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:512000',  // 512000 bytes = 500MB
-            'comment' => 'required',
-            'lesson' => 'required'
-        ]);
+        $typeSticker = $request->type_sticker;
+
+        $lesson_id = $request->get('lesson');
+        $comment_id = $request->get('comment');
+        $replyId = $request->get('reply_id');
+        $path = $request->path;
+        $timeSend = show_comment_detail_created_time();
+
+        if(!$typeSticker) {
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|mimes:pdf,doc,docx,xls,xlsx,m4a,3gp,flac,mp3,wav,aac,mp4,mov,wmv,avi,mkv,webm,png,jpg,jpeg|max:512000',  // 512000 bytes = 500MB
+                'comment' => 'required',
+                'lesson' => 'required'
+            ]);
+        }
+        
+        if ($roleId < 3) {
+            $senderName = "Telesa English";
+        } else{
+            $senderName = Auth::user()->first_name . " " . Auth::user()->last_name;
+        }
 
 		try {
-        if ($validator->fails()) {
-            $err = $validator->errors()->first('file') ?? "";
-            \Log::info("err: $err, userid: $userId");
-            
-            $data['success'] = 0;
-            $data['error'] = "File không cho phép. " . $validator->errors()->first('file'); // Error 
-            
-            return response($data['error'], 422)->header('Content-Type', 'text/plain');
-
-        } else {
-            if ($request->file('file')) {
-                set_time_limit(500);
-
-                $file = $request->file('file');
-                $original_filename = $file->getClientOriginalName();
-                
-                $file_type = '';
-                $ext = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
-                if (in_array($ext, array('pdf', 'doc', 'docx', 'xls', 'xlsx'))) {
-                    $file_type = 2;
-                } else if (in_array($ext, array('m4a', 'flac', 'mp3', 'wav', 'aac'))) {
-                    $file_type = 3;
-                } else if (in_array($ext, array('mp4', 'mov', 'wmv', 'avi', 'mkv', 'webm'))) {
-                    $file_type = 4;
-                } else if (in_array($ext, array('png', 'jpg', 'jpeg'))) {
-                    $file_type = 5;
-                }
-
-                $lesson_id = $request->get('lesson');
-                $comment_id = $request->get('comment');
-                $replyId = $request->get('reply_id');
-                
-                // File upload location
-                // $location = 'uploads/comments/' . $comment_id;
-                
-                $strRand = generate_random_string(20);
-
-                $filename = $strRand . '-' . $original_filename;
-                $env = config("app.env");
-                $destinationPath = 'chat/' . $env . "/" . $comment_id;
-                        
-                $disk = Storage::disk('s3');
-                $dir = $destinationPath . '/'. $filename ;
-                $disk->put($dir, file_get_contents($file), 'public');
-                $path = $disk->url($dir);
-                $fileConvert = $filename;
-
+            if($typeSticker) {
+                $file_type = 5;
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $userId,
                     'reply_id' => $replyId,
                     'comment_id' => $comment_id,
-                    'content' =>  $fileConvert,
+                    'content' =>  '',
                     'path' => $path,
                     'type' => $file_type,
                     'created_time' => Date('Y-m-d H:i:s')
                 ]);
 
-                // if($file_type == "4") {
-                //     $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
-                //     $dirConvert = $destinationPath . '/' . $fileConvert;
-                    // $this->convertFile($dirConvert, $dir, $cd_id, $fileConvert);
-                    // dispatch(new SendFileJob($dirConvert, $dir, $cd_id, $fileConvert))->onQueue("low");
-                // }
-
-                // insert new comment - type upload file
-                // add comment detail
-                
-
-                // update comment: updated_time
-                $updated_time = \Carbon\Carbon::createFromFormat('m d Y H:i A', date('m d Y H:iA'));
-                DB::table('comments')->where('id', $comment_id)->update(['updated_time' => $updated_time]);
+                $content = [
+                    'filepath' => $path,
+                    'filename' => '',
+                    'message' => ''
+                ];
 
                 // add notification
                 $_data = array(
@@ -148,34 +110,121 @@ class AjaxController extends Controller {
                     $data['detail_id'] = $cd_id;
                 }
                 $data['path'] = $path;
-                $data['time'] = show_comment_detail_created_time();
+                $data['time'] = $timeSend;
                 $data['success'] = 1;
-                $data['message'] = 'Uploaded Successfully!';
+                $data['message'] = 'Send sticker Successfully!';
 
-                if ($roleId < 3) {
-                    $senderName = "Telesa English";
-                } else{
-                    $senderName = Auth::user()->first_name . " " . Auth::user()->last_name;
+                event(new ChatEvent($userId, $replyId, $content, $timeSend, $senderName, $cd_id, $file_type));
+            }else {
+                if ($validator->fails()) {
+                    $err = $validator->errors()->first('file') ?? "";
+                    \Log::info("err: $err, userid: $userId");
+                    
+                    $data['success'] = 0;
+                    $data['error'] = "File không cho phép. " . $validator->errors()->first('file'); // Error 
+                    
+                    return response($data['error'], 422)->header('Content-Type', 'text/plain');
+    
+                } else {
+                    if ($request->file('file')) {
+                        set_time_limit(500);
+    
+                        $file = $request->file('file');
+                        $original_filename = $file->getClientOriginalName();
+                        
+                        $file_type = '';
+                        $ext = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
+                        if (in_array($ext, array('pdf', 'doc', 'docx', 'xls', 'xlsx'))) {
+                            $file_type = 2;
+                        } else if (in_array($ext, array('m4a', 'flac', 'mp3', 'wav', 'aac'))) {
+                            $file_type = 3;
+                        } else if (in_array($ext, array('mp4', 'mov', 'wmv', 'avi', 'mkv', 'webm'))) {
+                            $file_type = 4;
+                        } else if (in_array($ext, array('png', 'jpg', 'jpeg'))) {
+                            $file_type = 5;
+                        }
+    
+                        
+                        
+                        // File upload location
+                        // $location = 'uploads/comments/' . $comment_id;
+                        
+                        $strRand = generate_random_string(20);
+    
+                        $filename = $strRand . '-' . $original_filename;
+                        $env = config("app.env");
+                        $destinationPath = 'chat/' . $env . "/" . $comment_id;
+                                
+                        $disk = Storage::disk('s3');
+                        $dir = $destinationPath . '/'. $filename ;
+                        $disk->put($dir, file_get_contents($file), 'public');
+                        $path = $disk->url($dir);
+                        $fileConvert = $filename;
+    
+                        $cd_id = DB::table('comment_detail')->insertGetId([
+                            'user_id' => $userId,
+                            'reply_id' => $replyId,
+                            'comment_id' => $comment_id,
+                            'content' =>  $fileConvert,
+                            'path' => $path,
+                            'type' => $file_type,
+                            'created_time' => Date('Y-m-d H:i:s')
+                        ]);
+    
+                        // if($file_type == "4") {
+                        //     $fileConvert = pathinfo($filename, PATHINFO_FILENAME) . ".m3u8";
+                        //     $dirConvert = $destinationPath . '/' . $fileConvert;
+                            // $this->convertFile($dirConvert, $dir, $cd_id, $fileConvert);
+                            // dispatch(new SendFileJob($dirConvert, $dir, $cd_id, $fileConvert))->onQueue("low");
+                        // }
+    
+                        // insert new comment - type upload file
+                        // add comment detail
+                        
+    
+                        // update comment: updated_time
+                        $updated_time = \Carbon\Carbon::createFromFormat('m d Y H:i A', date('m d Y H:iA'));
+                        DB::table('comments')->where('id', $comment_id)->update(['updated_time' => $updated_time]);
+    
+                        // add notification
+                        $_data = array(
+                            'user_id' => $userId,
+                            'comment_id' => $cd_id,
+                            'reply_id' => $replyId
+                        );
+                        analyst_student_message($roleId, $_data, $replyId);
+    
+                        // Response
+                        if($cd_id) {
+                            $data['detail_id'] = $cd_id;
+                        }
+                        $data['path'] = $path;
+                        $data['time'] = $timeSend;
+                        $data['success'] = 1;
+                        $data['message'] = 'Uploaded Successfully!';
+    
+                        
+    
+                        $content = [
+                            'filepath' => $path,
+                            'filename' => $original_filename,
+                            'message' => ''
+                        ];
+    
+                        event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
+    
+                    } else {
+                        // Response
+                        $data['success'] = 0;
+                        $data['message'] = 'File not uploaded.';
+                    }
                 }
-
-                $content = [
-                    'filepath' => $path,
-                    'filename' => $original_filename,
-                    'message' => ''
-                ];
-
-                 event(new ChatEvent($userId, $replyId, $content, $data['time'], $senderName, $cd_id, $file_type));
-
-            } else {
-                // Response
-                $data['success'] = 0;
-                $data['message'] = 'File not uploaded.';
             }
-        }
+            
         } catch (\Exception $e) {
-                $data['success'] = 0;
-                $data['message'] = 'File not uploaded. ' . $e->getMessage() . ' - ' . $e->getCode();
-                return response($data['message'], 422)->header('Content-Type', 'text/plain');        
+            $data['success'] = 0;
+            $data['message'] = 'File not uploaded. ' . $e->getMessage() . ' - ' . $e->getCode();
+            return response($data['message'], 422)->header('Content-Type', 'text/plain');        
         }
 
         return response()->json($data);
