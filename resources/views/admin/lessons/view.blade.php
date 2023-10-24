@@ -599,6 +599,16 @@
                     },
                     1000 // Adjust the duration of the scroll animation (in milliseconds)
                 );
+
+                $('.user-comment-item').css({
+                    'border' : '1px solid #ccc',
+                    'background' : '#007bff'
+                });
+                // highlight message
+                replyElement.css({
+                    'border' : '2px solid indianred',
+                    'background' : '#007bff94'
+                });
             }
         });
 
@@ -757,7 +767,7 @@
     addEventListener('resize', handler, false);
 </script>
 
-<script src="{{ asset('js/socket.js') }}"></script>
+{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 <script src="{{ asset('js/sticker.js') }}"></script>
