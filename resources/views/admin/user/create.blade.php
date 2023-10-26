@@ -11,7 +11,7 @@
                         <div class="card-body">
                             <div class="card-title">Created User</div>
                             <hr />
-                            <form method="POST" action="{{ route('admin_user_store') }}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('admin_user_store') }}" enctype="multipart/form-data" autocomplete="off">
                                 @csrf
                                 <div class="form-group row">
                                     <label for="input-21" class="col-sm-2 col-form-label">First Name</label>
@@ -76,7 +76,7 @@
                                 <div class="form-group row">
                                     <label for="input-22" class="col-sm-2 col-form-label">Email</label>
                                     <div class="col-sm-10">
-                                        <input type="email" name="email" class="form-control" id="input-22" placeholder="Enter Your Email Address" />
+                                        <input type="email" name="email" class="form-control" autocomplete="off" id="input-22" placeholder="Enter Your Email Address" />
                                         @error('email')
                                             <div class="text-warning">{{ $message }}</div>
                                         @enderror
@@ -94,7 +94,7 @@
                                 <div class="form-group row">
                                     <label for="input-24" class="col-sm-2 col-form-label">Password</label>
                                     <div class="col-sm-10">
-                                        <input type="password" name="password" class="form-control" id="input-24" placeholder="Enter Password" />
+                                        <input type="password" name="password" class="form-control" id="input-24" placeholder="Enter Password" autocomplete="new-password" />
                                         @error('password')
                                             <div class="text-warning">{{ $message }}</div>
                                         @enderror
@@ -141,7 +141,12 @@
 
     @push('ccss')
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
-        
+        <style>
+            .form-control {
+                background-color: #596068 !important;
+            }
+
+        </style>
 
     @endpush
 
@@ -164,8 +169,8 @@
                 });
 
             $(function() {
-  $('.selectpicker').selectpicker();
-});
+                $('.selectpicker').selectpicker();
+            });
         </script>
     @endpush
 
