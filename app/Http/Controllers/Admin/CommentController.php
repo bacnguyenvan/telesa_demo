@@ -26,8 +26,9 @@ class CommentController extends Controller {
         $user_id = Auth::user()->id;
         $user_role =  Auth::user()->role_id;
        
-        $comments = Comments::orderBy('comments.updated_time', 'DESC')
-            ->leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
+        $comments = 
+        // Comments::orderBy('comments.updated_time', 'DESC')
+            Comments::leftJoin('vendors', 'vendors.id', '=', 'comments.lesson_id')
             ->leftJoin('comment_detail', 'comment_detail.comment_id', '=', 'comments.id')
             ->leftJoin('users', 'users.id', '=', 'comment_detail.user_id')
             ->leftJoin('user_label', 'comments.id', '=', 'user_label.comment_id')
@@ -55,7 +56,9 @@ class CommentController extends Controller {
             $comments = $comments->where('comments.user_id', $user_id);
         }
         
-        $comments = $comments->get();
+        $comments = $comments
+                    ->orderBy('comment_detail.id', 'DESC')
+                    ->get();
                     
         $userComments = [];
         $userIdArr = [];
