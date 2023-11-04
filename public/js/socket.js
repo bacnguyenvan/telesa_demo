@@ -6357,7 +6357,8 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__.default({
   wsHost: window.location.hostname,
   wsPort: 6001,
   enabledTransports: ['ws', 'wss'],
-  wssPort: 6001
+  wssPort: 6001,
+  forceTLS: true
 }); // P2P
 
 var channel = window.Echo.channel('public.chat.1');
@@ -6384,7 +6385,11 @@ channel.subscribed(function () {
     if (content.filepath) {
       html = '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span> ' + name + ' </span>' + '</div>' + '<div class="comment-detail">' + '<div class="preview-image">' + '<a href="' + content.filepath + '" target="_blank">' + '<div class="bg-preview-image" style="background-image: url(' + content.filepath + ')">' + '</div>' + '</a>' + '</div>' + '<span>' + '<a href="' + content.filepath + '" target="_blank">' + content.filename + '</a>' + '</span>' + '</div>' + '</div>' + '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
     } else {
-      html = '<div id=cmtDetail_' + commentId + ' class="user-comment-item cmt-left">' + '<div class="comment-username">' + '<span>' + name + '</span>' + '</div>' + '<div class="comment-detail">' + '<span>' + msg + '</span>' + '</div>' + '</div>' + '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
+      var reply_message = content.reply_message;
+      var reply_message_class = reply_message ? "user-reply-comment-item" : "";
+      html = '<div id=cmtDetail_' + commentId + ' data-id=' + commentId + ' class="user-comment-item cmt-left ' + reply_message_class + '">' + '<div class="comment-username">' + '<span>' + name + '</span>' + '</div>' + '<div class="comment-detail">';
+      if (reply_message) html += '<p class="reply-content" data-id=' + content.reply_message_id + '><i class="fa fa-reply"></i>' + reply_message + '</p>';
+      html += '<span>' + msg + '</span>' + '</div>' + '</div>' + '<div id=cmtTime_' + commentId + ' class="comment-time cmt-left">' + '<span>' + time + '</span>' + '</div>';
     }
 
     $('.user-comment-list').append(html);

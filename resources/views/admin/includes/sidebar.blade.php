@@ -148,10 +148,28 @@
 
 -->
     <li class="menu-label">Extra</li>
-    <li>
+    <!-- <li>
         <a href="https://www.facebook.com/groups/760662805340154/" target="_blank">
             <div class="parent-icon"><i class="fa fa-facebook"></i></div>
             <div class="menu-title">Nhóm kín Facebook</div>
+        </a>
+    </li> -->
+    <li>
+        <a href="https://dictionary.cambridge.org/dictionary" target="_blank">
+            <div class="parent-icon"> <img src="{{ asset('contents/admin') }}/images/logo-lrg.png" width="20px" height="20px"/></div>
+            <div class="menu-title">Từ điển</div>
+        </a>
+    </li>
+    <li>
+        <a href="https://translate.google.com" target="_blank">
+            <div class="parent-icon"> <img src="{{ asset('contents/admin') }}/images/google-translate.jpg" width="20px" height="20px" /></div>
+            <div class="menu-title">Google dịch</div>
+        </a>
+    </li>
+    <li>
+        <a href="https://youglish.com" target="_blank">
+            <div class="parent-icon"> <img src="{{ asset('contents/admin') }}/images/youglish.png" width="20px" height="20px" /></div>
+            <div class="menu-title">Tìm từ qua Videos</div>
         </a>
     </li>
     <li>
