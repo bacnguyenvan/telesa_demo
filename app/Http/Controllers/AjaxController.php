@@ -199,7 +199,7 @@ class AjaxController extends Controller {
                             $data['detail_id'] = $cd_id;
                         }
 
-                        $cloudfrontPath = config('api.cloudfront_url') . '/chat/dev/' . $cd_id . '/' . $filename;
+                        $cloudfrontPath = config('api.cloudfront_url') . '/chat/dev/' . $comment_id . '/' . $filename;
 
                         $data['path'] = $cloudfrontPath;
                         $data['time'] = $timeSend;
