@@ -198,7 +198,10 @@ class AjaxController extends Controller {
                         if($cd_id) {
                             $data['detail_id'] = $cd_id;
                         }
-                        $data['path'] = $path;
+
+                        $cloudfrontPath = config('api.cloudfront_url') . '/chat/dev/' . $cd_id . '/' . $filename;
+
+                        $data['path'] = $cloudfrontPath;
                         $data['time'] = $timeSend;
                         $data['success'] = 1;
                         $data['message'] = 'Uploaded Successfully!';
@@ -206,7 +209,7 @@ class AjaxController extends Controller {
                         
     
                         $content = [
-                            'filepath' => $path,
+                            'filepath' => $cloudfrontPath,
                             'filename' => $original_filename,
                             'message' => ''
                         ];

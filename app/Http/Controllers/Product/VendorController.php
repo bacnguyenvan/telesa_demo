@@ -171,8 +171,10 @@ class VendorController extends Controller
         $fileInComment = $fileInComment  ->get();
 
         $emojis = $this->getEmojiList();
+
+        $cloudfrontUrl = config('api.cloudfront_url') . '/chat/dev';
         
-        return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id', 'emojis'));
+        return view('admin.lessons.view', compact('vendor',  'listComments', 'fileInComment', 'cur_comment_id', 'cur_lesson_id', 'cur_reply_id', 'emojis', 'cloudfrontUrl'));
     }
 
     public function index_course($id)

@@ -10,7 +10,7 @@ window.Echo = new Echo({
     wsPort: 6001,
     enabledTransports: ['ws', 'wss'],
     wssPort: 6001,
-    forceTLS: true
+    forceTLS: process.env.MIX_PUSHER_SCHEME == "https" ? true : false
 });
 
 

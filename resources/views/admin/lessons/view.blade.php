@@ -90,14 +90,14 @@
                                                             <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
                                                         </a> --}}
                                                         @if($detail->type == 5)
-                                                        <img src="{{ $detail->path }}" loading="lazy" alt="Hình ảnh mô tả">
+                                                        <img src="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}" loading="lazy" alt="Hình ảnh mô tả">
                                                         @else
-                                                        <a href="{{ $detail->path }}" target="_blank">
-                                                            <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
+                                                        <a href="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}" target="_blank">
+                                                            <div class="bg-preview-image" style="background-image: url('{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}'); width:100%"></div>
                                                         </a>
                                                         @endif
                                                     </div>
-                                                    <span><a href="{{ $detail->path }}" target="_blank">{{ $detail->content }}</a></span>
+                                                    <span><a href="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}" target="_blank">{{ $detail->content }}</a></span>
                                                     @else
                                                         @if($detail->type == 3)
                                                         <!-- <video loading="lazy" width="100%" height="50px" controls>
@@ -106,11 +106,11 @@
                                                         </video> -->
                                                         <audio loading="lazy" style="width: 100%; height: 50px"
                                                         controls
-                                                        src="{{ $detail->path }}"
+                                                        src="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}"
                                                         ></audio>
                                                         @else
                                                         <video loop=1 muted=1 autoplay=false width="100%" height="150px" controls>
-                                                            <data-src src="{{ $detail->path }}" type="video/mp4"></data-src>
+                                                            <data-src src="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}" type="video/mp4"></data-src>
                                                         </video>
                                                         <!-- <video class="video-js vjs-default-skin" controls preload="auto" width="100%" height="360" data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'>
                                                             <source src="{{ $detail->path }}" type="video/mp4">
@@ -767,7 +767,7 @@
     addEventListener('resize', handler, false);
 </script>
 
-<script src="{{ asset('js/socket.js') }}"></script>
+{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 <script src="{{ asset('js/sticker.js') }}"></script>
