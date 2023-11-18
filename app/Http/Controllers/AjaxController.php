@@ -80,7 +80,7 @@ class AjaxController extends Controller {
 
 		try {
             if($typeSticker) {
-                $file_type = 5;
+                $file_type = 6; // sticker
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $userId,
                     'reply_id' => $replyId,

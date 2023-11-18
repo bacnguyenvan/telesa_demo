@@ -84,12 +84,14 @@
                                                 @endif --}}
 
                                                 @if($detail->type > 1)
-                                                    @if($detail->type == 5 || $detail->type == 2)
+                                                    @if($detail->type == 6 || $detail->type == 5 || $detail->type == 2)
                                                     <div class="preview-image">
                                                         {{-- <a href="{{ $detail->path }}" target="_blank">
                                                             <div class="bg-preview-image" style="background-image: url('{{ $detail->path }}'); width:100%"></div>
                                                         </a> --}}
-                                                        @if($detail->type == 5)
+                                                        @if($detail->type == 6)
+                                                        <img src="{{ $detail->path }}" loading="lazy" alt="Hình ảnh mô tả">
+                                                        @elseif($detail->type == 5)
                                                         <img src="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}" loading="lazy" alt="Hình ảnh mô tả">
                                                         @else
                                                         <a href="{{ $cloudfrontUrl . "/" . $detail->comment_id . "/" . $detail->content }}" target="_blank">
@@ -767,7 +769,7 @@
     addEventListener('resize', handler, false);
 </script>
 
-{{-- <script src="{{ asset('js/socket.js') }}"></script> --}}
+<script src="{{ asset('js/socket.js') }}"></script>
 <script src="{{ asset('js/record_init.js') }}"></script>
 <script src="{{ asset('js/record.js') }}"></script>
 <script src="{{ asset('js/sticker.js') }}"></script>
