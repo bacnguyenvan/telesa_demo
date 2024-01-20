@@ -81,6 +81,14 @@ class AjaxController extends Controller {
 		try {
             if($typeSticker) {
                 $file_type = 6; // sticker
+
+                if (!$comment_id) {
+                    $comment_id = $this->createCommentData([
+                        'user_id' => $userId,
+                        'lesson_id' => $lesson_id
+                    ]);
+                }
+                
                 $cd_id = DB::table('comment_detail')->insertGetId([
                     'user_id' => $userId,
                     'reply_id' => $replyId,
@@ -160,7 +168,14 @@ class AjaxController extends Controller {
                         $disk->put($dir, file_get_contents($file), 'public');
                         $path = $disk->url($dir);
                         $fileConvert = $filename;
-    
+                        
+                        if (!$comment_id) {
+                            $comment_id = $this->createCommentData([
+                                'user_id' => $userId,
+                                'lesson_id' => $lesson_id
+                            ]);
+                        }
+
                         $cd_id = DB::table('comment_detail')->insertGetId([
                             'user_id' => $userId,
                             'reply_id' => $replyId,
@@ -278,5 +293,17 @@ class AjaxController extends Controller {
             // delete comment detail in DB
             CommentDetail::where('id', $id)->where('user_id', $user_id)->delete();
         }
+    }
+
+    public function createCommentData($conditonCom)
+    {
+        $commentData = DB::table('comments')->where($conditonCom)->first();
+        if($commentData) {
+            $comment_id = $commentData->id;
+        }else{
+            $comment_id = DB::table('comments')->insertGetId($conditonCom);
+        }
+
+        return $comment_id;
     }
 }
